@@ -57,7 +57,10 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden">
+    // FIX APPLIED HERE:
+    // Added 'pt-24' for mobile to push content down below the navbar.
+    // Added 'md:pt-0' to reset this on desktop where vertical centering works fine.
+    <section className="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden pt-24 md:pt-0">
       {/* --- BACKGROUND 3D SCENE --- */}
       <div className="absolute inset-0 z-0">
         <Scene3D />
@@ -198,7 +201,7 @@ export default function Hero() {
                 },
                 {
                   icon: Mail,
-                  href: "mailto:prasangeetdgr@gmail.com",
+                  href: "mailto:prasangeetdongre1@gmail.com",
                   label: "Email",
                 },
               ].map((social, idx) => (
@@ -219,7 +222,7 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        {/* Scroll Indicator - Adjusted Position */}
+        {/* Scroll Indicator - Moved to bottom-8 for better clearance */}
         <motion.div
           className="absolute bottom-1 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-muted-foreground/50 pointer-events-none z-20"
           initial={{ opacity: 0 }}

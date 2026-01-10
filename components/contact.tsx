@@ -39,7 +39,7 @@ const itemVariants = {
 
 export default function Contact() {
   const [copied, setCopied] = useState(false);
-  const email = "prasangeetdgr@gmail.com";
+  const email = "prasangeetdongre1@gmail.com";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(email);
@@ -61,7 +61,7 @@ export default function Contact() {
       color: "hover:bg-blue-600 hover:text-white hover:border-blue-500",
     },
     {
-      name: "Twitter / X",
+      name: "Twitter", // Shortened name for mobile fit
       href: "https://x.com/prasangeetdgr",
       icon: Twitter,
       color: "hover:bg-black hover:text-white hover:border-zinc-800",
@@ -71,22 +71,21 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      // CHANGED: Added 'min-h-[80vh] flex flex-col justify-center' and increased py padding
-      className="relative border-b border-border/50 bg-gradient-to-b from-transparent via-primary/5 to-transparent py-32 sm:py-48 min-h-[80vh] flex flex-col justify-center overflow-hidden"
+      className="relative border-b border-border/50 bg-gradient-to-b from-transparent via-primary/5 to-transparent py-24 md:py-32 lg:py-48 min-h-[80vh] flex flex-col justify-center overflow-hidden"
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <motion.div
-          className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-start"
+          className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-start"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={containerVariants}
         >
           {/* --- Left Column: Context & Pitch --- */}
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             <motion.div className="space-y-4" variants={itemVariants}>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/20 bg-green-500/10 text-green-500 text-xs font-medium">
                 <span className="relative flex h-2 w-2">
@@ -96,20 +95,20 @@ export default function Contact() {
                 Available for opportunities
               </div>
 
-              <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
                 Let's build something <br />
                 <span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
                   amazing together.
                 </span>
               </h2>
 
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-md">
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-md">
                 I'm currently looking for new opportunities in Full Stack
                 Development and AI. Whether you have a question, a project idea,
                 or just want to say hi, I'll try my best to get back to you!
               </p>
 
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center gap-2 text-muted-foreground pt-2">
                 <MapPin className="h-4 w-4 text-primary" />
                 <span className="text-sm">Jodhpur, India (Open to Remote)</span>
               </div>
@@ -120,14 +119,14 @@ export default function Contact() {
           <div className="space-y-6">
             {/* 1. Email Card (The Hero Action) */}
             <motion.div variants={itemVariants}>
-              <div className="group rounded-2xl border border-primary/20 bg-background/50 p-6 backdrop-blur-md shadow-lg transition-all hover:shadow-primary/10">
-                <div className="flex items-center justify-between mb-4">
+              <div className="group rounded-2xl border border-primary/20 bg-background/50 p-5 sm:p-6 backdrop-blur-md shadow-lg transition-all hover:shadow-primary/10">
+                <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-xl bg-primary/10 text-primary">
-                      <Mail className="h-6 w-6" />
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-primary/10 text-primary">
+                      <Mail className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-foreground">
+                      <h3 className="font-semibold text-foreground text-sm sm:text-base">
                         Email Me
                       </h3>
                       <p className="text-xs text-muted-foreground">
@@ -139,7 +138,7 @@ export default function Contact() {
                     asChild
                     size="icon"
                     variant="ghost"
-                    className="rounded-full hover:bg-primary/10"
+                    className="rounded-full hover:bg-primary/10 h-8 w-8 sm:h-10 sm:w-10"
                   >
                     <a href={`mailto:${email}`}>
                       <Send className="h-4 w-4 text-primary" />
@@ -147,14 +146,14 @@ export default function Contact() {
                   </Button>
                 </div>
 
-                <div className="flex items-center justify-between rounded-xl bg-secondary/50 p-3 border border-border/50 group-hover:border-primary/30 transition-colors">
-                  <span className="text-sm font-mono text-muted-foreground truncate mr-2">
+                <div className="flex items-center justify-between rounded-xl bg-secondary/50 p-3 border border-border/50 group-hover:border-primary/30 transition-colors gap-2">
+                  <span className="text-xs sm:text-sm font-mono text-muted-foreground truncate flex-1 min-w-0">
                     {email}
                   </span>
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="h-8 gap-1.5 text-xs font-medium hover:bg-background"
+                    className="h-8 gap-1.5 text-xs font-medium hover:bg-background shrink-0"
                     onClick={handleCopy}
                   >
                     <AnimatePresence mode="wait" initial={false}>
@@ -167,7 +166,7 @@ export default function Contact() {
                           className="flex items-center gap-1.5 text-green-500"
                         >
                           <Check className="h-3.5 w-3.5" />
-                          Copied
+                          <span className="hidden sm:inline">Copied</span>
                         </motion.span>
                       ) : (
                         <motion.span
@@ -178,7 +177,7 @@ export default function Contact() {
                           className="flex items-center gap-1.5"
                         >
                           <Copy className="h-3.5 w-3.5" />
-                          Copy
+                          <span className="hidden sm:inline">Copy</span>
                         </motion.span>
                       )}
                     </AnimatePresence>
@@ -190,7 +189,8 @@ export default function Contact() {
             {/* 2. Social Links Grid */}
             <motion.div
               variants={itemVariants}
-              className="grid gap-4 sm:grid-cols-3"
+              // Changed grid to always be 3 columns for better density, text scales down
+              className="grid grid-cols-3 gap-3 sm:gap-4"
             >
               {socialLinks.map((social, idx) => (
                 <motion.a
@@ -198,12 +198,14 @@ export default function Contact() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`flex flex-col items-center justify-center gap-2 rounded-xl border border-border/50 bg-background/50 p-4 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${social.color}`}
+                  className={`flex flex-col items-center justify-center gap-2 rounded-xl border border-border/50 bg-background/50 p-3 sm:p-4 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${social.color}`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <social.icon className="h-6 w-6" />
-                  <span className="text-xs font-medium">{social.name}</span>
+                  <social.icon className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <span className="text-[10px] sm:text-xs font-medium text-center">
+                    {social.name}
+                  </span>
                 </motion.a>
               ))}
             </motion.div>
@@ -212,7 +214,7 @@ export default function Contact() {
 
         {/* Footer Section */}
         <motion.div
-          className="mt-24 border-t border-border/40 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground"
+          className="mt-12 sm:mt-24 border-t border-border/40 pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs sm:text-sm text-muted-foreground text-center sm:text-left"
           variants={itemVariants}
           initial="hidden"
           whileInView="visible"

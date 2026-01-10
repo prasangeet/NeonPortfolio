@@ -175,9 +175,9 @@ export default function About() {
                           username="prasangeet"
                           theme={theme}
                           fontSize={12}
-                          blockSize={11}
-                          blockMargin={4}
-                          blockRadius={2}
+                          blockSize={7}
+                          blockMargin={2}
+                          blockRadius={1}
                         />
                       ) : (
                         <div className="h-[120px] w-full animate-pulse bg-muted/10 rounded-lg" />
