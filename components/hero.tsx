@@ -1,15 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  Github,
-  Linkedin,
-  Mail,
-  Mouse,
-  ChevronDown,
-  Terminal,
-} from "lucide-react";
+import { ArrowRight, Github, Linkedin, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Scene3D } from "./3d-scene";
 import { useState, useEffect } from "react";
@@ -65,40 +57,44 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-      {/* Background Gradients & Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background pointer-events-none" />
+    <section className="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden">
+      {/* --- BACKGROUND 3D SCENE --- */}
+      <div className="absolute inset-0 z-0">
+        <Scene3D />
+      </div>
 
-      {/* Glowing Orbs */}
-      <div className="absolute top-1/4 -left-20 w-72 h-72 bg-purple-500/20 rounded-full blur-[100px] animate-pulse" />
-      <div className="absolute bottom-1/4 -right-20 w-72 h-72 bg-cyan-500/20 rounded-full blur-[100px] animate-pulse delay-1000" />
+      {/* Background Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0" />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      {/* CONTENT CONTAINER */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pointer-events-none pb-20">
         <motion.div
-          className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center"
+          className="grid lg:grid-cols-1 gap-8 items-center"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
           {/* Text Content */}
-          <div className="space-y-8 text-center lg:text-left">
+          <div className="space-y-6 sm:space-y-8 text-center flex flex-col items-center">
+            {/* Availability Badge */}
             <motion.div
               variants={itemVariants}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-sm mx-auto lg:mx-0"
+              className="pointer-events-auto inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-sm"
             >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
-              <span className="text-xs font-medium text-foreground/80">
+              <span className="text-[10px] sm:text-xs font-medium text-foreground/80">
                 Available for Opportunities
               </span>
             </motion.div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 w-full pointer-events-auto">
+              {/* Name */}
               <motion.h1
-                className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight"
                 variants={itemVariants}
               >
                 Hi, I'm <br />
@@ -107,23 +103,25 @@ export default function Hero() {
                 </span>
               </motion.h1>
 
-              {/* Dynamic Typewriter Text */}
+              {/* Roles Section - Stacked Layout */}
               <motion.div
-                className="h-12 sm:h-16 flex items-center justify-center lg:justify-start"
+                className="flex flex-col items-center justify-center gap-2"
                 variants={itemVariants}
               >
-                <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-muted-foreground mr-2">
+                <span className="text-xl sm:text-2xl text-muted-foreground font-medium">
                   I am a
                 </span>
-                <div className="relative">
+
+                {/* Rotating Text Container */}
+                <div className="relative h-12 sm:h-16 w-full flex justify-center overflow-visible">
                   <AnimatePresence mode="wait">
                     <motion.span
                       key={index}
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: -20, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="absolute top-1/2 -translate-y-1/2 left-0 whitespace-nowrap bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl font-bold"
+                      initial={{ y: 20, opacity: 0, filter: "blur(4px)" }}
+                      animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                      exit={{ y: -20, opacity: 0, filter: "blur(4px)" }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      className="absolute top-0 text-center whitespace-nowrap bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold pb-2"
                     >
                       {roles[index]}
                     </motion.span>
@@ -132,7 +130,7 @@ export default function Hero() {
               </motion.div>
 
               <motion.p
-                className="text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed"
+                className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-sm sm:max-w-xl mx-auto leading-relaxed pt-2"
                 variants={itemVariants}
               >
                 Crafting scalable solutions at the intersection of web
@@ -143,21 +141,22 @@ export default function Hero() {
 
             {/* Buttons */}
             <motion.div
-              className="flex flex-wrap gap-4 justify-center lg:justify-start pt-4"
+              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center pt-4 pointer-events-auto"
               variants={containerVariants}
             >
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className="w-full sm:w-auto"
               >
                 <Button
                   asChild
                   size="lg"
-                  className="h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 group relative overflow-hidden"
+                  className="w-full sm:w-auto h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 group relative overflow-hidden"
                 >
                   <a href="#projects">
-                    <span className="relative z-10 flex items-center gap-2">
-                      View My Work{" "}
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      View My Work
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </span>
                     <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -168,12 +167,13 @@ export default function Hero() {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className="w-full sm:w-auto"
               >
                 <Button
                   asChild
                   variant="outline"
                   size="lg"
-                  className="h-12 px-8 border-primary/20 hover:bg-primary/5 hover:border-primary/40 backdrop-blur-sm"
+                  className="w-full sm:w-auto h-12 px-8 border-primary/20 hover:bg-primary/5 hover:border-primary/40 backdrop-blur-sm"
                 >
                   <a href="#contact">Contact Me</a>
                 </Button>
@@ -182,7 +182,7 @@ export default function Hero() {
 
             {/* Social Links */}
             <motion.div
-              className="flex gap-4 justify-center lg:justify-start pt-6"
+              className="flex gap-4 justify-center pt-6 pointer-events-auto"
               variants={containerVariants}
             >
               {[
@@ -217,37 +217,11 @@ export default function Hero() {
               ))}
             </motion.div>
           </div>
-
-          {/* 3D Scene Area */}
-          <motion.div
-            className="relative hidden lg:block h-[500px] w-full"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-          >
-            {/* Holographic Platform Effect */}
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 via-purple-500/10 to-transparent rounded-full blur-3xl"
-              animate={{
-                opacity: [0.5, 0.8, 0.5],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            />
-
-            <motion.div
-              className="relative w-full h-full z-10"
-              animate={{ y: [-10, 10, -10] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Scene3D />
-            </motion.div>
-          </motion.div>
         </motion.div>
 
-        {/* Scroll Indicator */}
+        {/* Scroll Indicator - Adjusted Position */}
         <motion.div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-muted-foreground/50"
+          className="absolute bottom-1 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-muted-foreground/50 pointer-events-none z-20"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 1 }}

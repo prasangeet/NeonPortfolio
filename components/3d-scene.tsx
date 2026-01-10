@@ -6,6 +6,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const logos = [
   {
@@ -88,23 +89,29 @@ export function Scene3D() {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // --- Configuration ---
+    // This value controls how high/low the globe sits.
+    // -8 raises it so it's "lying at the bottom" but clearly visible.
+    const GLOBE_Y_POSITION = -9;
+
     // --- Base Setup ---
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(
-      70,
+      45,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       1000,
     );
-    camera.position.z = 32;
+    // Position camera back enough to see the whole system
+    camera.position.set(0, 0, 45);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: false,
       alpha: true,
       powerPreference: "high-performance",
-      stencil: false,
     });
+
     renderer.setSize(
       containerRef.current.clientWidth,
       containerRef.current.clientHeight,
@@ -113,18 +120,29 @@ export function Scene3D() {
     renderer.toneMapping = THREE.ReinhardToneMapping;
     containerRef.current.appendChild(renderer.domElement);
 
-    // --- Post-Processing (Refined Glow) ---
-    const renderScene = new RenderPass(scene, camera);
+    // --- Orbit Controls ---
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.enableZoom = false;
+    controls.enablePan = false;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.5;
 
-    // FIX: Lowered strength significantly, set threshold to 0 so dark icons glow too
+    // CRITICAL FIX: Set the target to exactly where the globe is.
+    // This ensures the camera rotates around the globe, not empty space.
+    controls.target.set(0, GLOBE_Y_POSITION, 0);
+
+    // --- Post-Processing ---
+    const renderScene = new RenderPass(scene, camera);
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(
         containerRef.current.clientWidth,
         containerRef.current.clientHeight,
       ),
-      0.15, // Strength: Very subtle now (was 0.3)
-      0.1, // Radius: Tighter glow (was 0.2)
-      0.0, // Threshold: Setting to 0 ensures everything glows a little bit, including dark icons
+      0.15,
+      0.1,
+      0.0,
     );
 
     const composer = new EffectComposer(renderer);
@@ -134,10 +152,11 @@ export function Scene3D() {
 
     // --- Objects ---
     const mainGroup = new THREE.Group();
+    mainGroup.position.y = GLOBE_Y_POSITION;
     scene.add(mainGroup);
 
     // Core (Black Hole)
-    const coreGeometry = new THREE.IcosahedronGeometry(9, 2);
+    const coreGeometry = new THREE.IcosahedronGeometry(10, 2);
     const coreMaterial = new THREE.MeshBasicMaterial({
       color: 0x000000,
       transparent: true,
@@ -146,29 +165,20 @@ export function Scene3D() {
     const coreSphere = new THREE.Mesh(coreGeometry, coreMaterial);
     mainGroup.add(coreSphere);
 
-    // Wireframe (The Light Source)
+    // Wireframe
     const wireframeMaterial = new THREE.MeshBasicMaterial({
       color: 0x00ffff,
       wireframe: true,
       transparent: true,
-      opacity: 0.8,
-      side: THREE.DoubleSide,
+      opacity: 0.15,
     });
     const wireframeSphere = new THREE.Mesh(coreGeometry, wireframeMaterial);
-    wireframeSphere.scale.set(1.001, 1.001, 1.001);
+    wireframeSphere.scale.set(1.01, 1.01, 1.01);
     mainGroup.add(wireframeSphere);
 
-    // Icons & Lines
+    // Icons
     const textureLoader = new THREE.TextureLoader();
     const iconSprites: THREE.Sprite[] = [];
-    const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x00aaff,
-      transparent: true,
-      opacity: 0.3,
-    });
-
-    const count = logos.length;
-    const phi_golden = Math.PI * (3 - Math.sqrt(5));
 
     logos.forEach((logo, i) => {
       textureLoader.load(logo.url, (texture) => {
@@ -176,74 +186,44 @@ export function Scene3D() {
         const material = new THREE.SpriteMaterial({
           map: texture,
           transparent: true,
-          opacity: 1.0,
+          opacity: 0.9,
           depthWrite: false,
         });
         const sprite = new THREE.Sprite(material);
 
-        const y = 1 - (i / (count - 1)) * 2;
-        const radiusAtY = Math.sqrt(1 - y * y);
-        const theta = phi_golden * i;
-        const radius = 15;
+        const phi = Math.acos(-1 + (2 * i) / logos.length);
+        const theta = Math.sqrt(logos.length * Math.PI) * phi;
+        const radius = 16;
 
-        const x = radius * Math.cos(theta) * radiusAtY;
-        const z = radius * Math.sin(theta) * radiusAtY;
-        const yPos = radius * y;
-
-        sprite.position.set(x, yPos, z);
-        sprite.scale.set(3, 3, 3);
+        sprite.position.setFromSphericalCoords(radius, phi, theta);
+        sprite.scale.set(2.5, 2.5, 2.5);
 
         mainGroup.add(sprite);
         iconSprites.push(sprite);
-
-        const points = [
-          new THREE.Vector3(0, 0, 0),
-          new THREE.Vector3(x, yPos, z),
-        ];
-        const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
-        const line = new THREE.Line(lineGeo, lineMaterial);
-        mainGroup.add(line);
       });
     });
 
     // Particles (Stars)
-    const particleCount = 250;
+    // Note: We add these to 'scene', not 'mainGroup', so they don't rotate with the globe drag
+    const particleCount = 200;
     const particlesGeo = new THREE.BufferGeometry();
     const posArray = new Float32Array(particleCount * 3);
-    // Store initial positions to animate from
-    const initialPositions = new Float32Array(particleCount * 3);
 
     for (let i = 0; i < particleCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 150;
-      initialPositions[i] = posArray[i];
+      posArray[i] = (Math.random() - 0.5) * 200;
     }
     particlesGeo.setAttribute(
       "position",
       new THREE.BufferAttribute(posArray, 3),
     );
     const particlesMat = new THREE.PointsMaterial({
-      size: 0.4,
+      size: 0.5,
       color: 0xaaddff,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.4,
     });
     const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
     scene.add(particlesMesh);
-
-    // --- Interaction Logic ---
-    const mouse = { x: 0, y: 0 };
-    const targetRotation = { x: 0, y: 0 };
-
-    const handleMouseMove = (event: MouseEvent) => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-      mouse.x = x;
-      mouse.y = y;
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
 
     // --- Animation ---
     const clock = new THREE.Clock();
@@ -253,68 +233,55 @@ export function Scene3D() {
       animationId = requestAnimationFrame(animate);
       const time = clock.getElapsedTime();
 
-      // 1. Calculate Targets
-      mainGroup.rotation.y += 0.002; // Constant rotation
-      targetRotation.x = mouse.y * 0.5;
-      targetRotation.y = mouse.x * 0.5;
+      controls.update();
 
-      // 2. Animate Main Sphere
-      mainGroup.rotation.x += (targetRotation.x - mainGroup.rotation.x) * 0.05;
-      mainGroup.rotation.z += (-targetRotation.y - mainGroup.rotation.z) * 0.05;
-
-      // 3. Animate Stars (Mouse Interaction)
-      particlesMesh.rotation.x +=
-        (targetRotation.x * 0.2 - particlesMesh.rotation.x) * 0.05;
-      particlesMesh.rotation.y +=
-        (-targetRotation.y * 0.2 - particlesMesh.rotation.y) * 0.05;
-
-      // 4. Pulse & Drift
-      const scale = 1 + Math.sin(time * 1.5) * 0.02;
-      wireframeSphere.scale.set(1.001 * scale, 1.001 * scale, 1.001 * scale);
-
+      // Gentle floating animation for icons
       iconSprites.forEach((sprite, i) => {
-        sprite.position.y += Math.sin(time * 2 + i) * 0.01;
+        // Just a tiny wobble
+        sprite.scale.setScalar(2.5 + Math.sin(time * 2 + i) * 0.1);
       });
 
-      const positions = particlesGeo.attributes.position.array as Float32Array;
-      for (let i = 0; i < particleCount; i++) {
-        const i3 = i * 3;
-        positions[i3] = initialPositions[i3] + Math.sin(time * 0.1 + i) * 2;
-        positions[i3 + 1] =
-          initialPositions[i3 + 1] + Math.cos(time * 0.15 + i) * 2;
-        positions[i3 + 2] =
-          initialPositions[i3 + 2] + Math.sin(time * 0.1 + i * 2) * 2;
-      }
-      particlesGeo.attributes.position.needsUpdate = true;
+      // Ambient particle rotation
+      particlesMesh.rotation.y = time * 0.05;
 
       composer.render();
     };
     animate();
 
+    // --- Resize & Offset ---
     const handleResize = () => {
       if (!containerRef.current) return;
       const width = containerRef.current.clientWidth;
       const height = containerRef.current.clientHeight;
+
       camera.aspect = width / height;
+
+      // OPTICAL OFFSET:
+      // Since the globe is at Y = -9, if we look directly at it, it will be in the CENTER of the screen.
+      // We want it at the BOTTOM.
+      // setViewOffset allows us to shift the window so the center point is physically lower on the screen.
+      // (val 1: fullWidth, val 2: fullHeight, val 3: x-offset, val 4: y-offset, val 5: width, val 6: height)
+      // A negative Y offset shifts the view UP, pushing the object DOWN.
+      const verticalOffset = -height * 0.15; // 15% offset
+      camera.setViewOffset(width, height, 0, verticalOffset, width, height);
+
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
       composer.setSize(width, height);
     };
+
+    // Initial call
+    handleResize();
     window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animationId);
+      controls.dispose();
       renderer.dispose();
       composer.dispose();
     };
   }, []);
 
-  return (
-    <div
-      ref={containerRef}
-      className="w-full h-96 relative overflow-hidden rounded-xl cursor-move bg-transparent"
-    />
-  );
+  return <div ref={containerRef} className="w-full h-full relative z-0" />;
 }

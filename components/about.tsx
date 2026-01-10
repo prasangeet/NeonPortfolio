@@ -9,7 +9,6 @@ import {
   Github,
   ExternalLink,
 } from "lucide-react";
-// Import kept exactly as requested
 import { GitHubCalendar } from "react-github-calendar";
 import { useState, useEffect } from "react";
 
@@ -51,7 +50,7 @@ const imageVariants = {
     transition: {
       duration: 3,
       repeat: Infinity,
-      repeatType: "reverse" as const,
+      repeatType: "reverse",
       ease: "easeInOut",
     },
   },
@@ -84,22 +83,11 @@ export default function About() {
   return (
     <section
       id="about"
-      className="border-b border-border/50 bg-gradient-to-b from-transparent via-primary/5 to-transparent relative overflow-hidden w-full"
+      className="border-b border-border/50 bg-gradient-to-b from-transparent via-primary/5 to-transparent relative overflow-hidden w-full max-w-[100vw]"
     >
-      {/* --- CSS TRICK: This style block forces the scrollbar to vanish --- */}
-      <style jsx global>{`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none; /* IE and Edge */
-          scrollbar-width: none; /* Firefox */
-        }
-      `}</style>
-
-      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8 relative z-10 w-full">
+      <div className="mx-auto max-w-6xl px-4 py-12 lg:py-24 sm:px-6 lg:px-8 relative z-10 w-full">
         <motion.div
-          className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-start"
+          className="grid gap-16 lg:grid-cols-2 lg:gap-8 items-start"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
@@ -107,14 +95,14 @@ export default function About() {
         >
           {/* --- Left Column: Image & Heatmap --- */}
           <motion.div
-            className="relative flex flex-col gap-8"
+            className="relative flex flex-col gap-10 lg:gap-8 items-center lg:items-start"
             variants={containerVariants}
           >
             <div className="absolute top-0 left-0 -inset-4 bg-gradient-to-r from-primary to-blue-600 rounded-full blur-3xl opacity-20 animate-pulse pointer-events-none" />
 
-            {/* Profile Image */}
+            {/* Profile Image Wrapper */}
             <motion.div
-              className="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto lg:mx-0"
+              className="relative w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 mx-auto lg:mx-0"
               variants={imageVariants}
             >
               <motion.div
@@ -131,21 +119,26 @@ export default function About() {
                 </div>
               </motion.div>
 
+              {/* Floating Card Position: Centered bottom on mobile, Right side on Desktop */}
               <motion.div
-                className="absolute -bottom-6 -right-6 rounded-xl border border-border/50 bg-background/80 p-4 backdrop-blur-md shadow-xl"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                className="absolute 
+                           -bottom-12 left-1/2 -translate-x-1/2 
+                           sm:-bottom-6 sm:left-auto sm:right-[-24px] sm:translate-x-0
+                           w-max z-20
+                           rounded-xl border border-border/50 bg-background/80 p-3 sm:p-4 backdrop-blur-md shadow-xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.5 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/10 text-green-500">
-                    <Terminal className="h-5 w-5" />
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-green-500/10 text-green-500">
+                    <Terminal className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground font-medium">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">
                       Coding Streak
                     </p>
-                    <p className="text-sm font-bold text-foreground">
+                    <p className="text-xs sm:text-sm font-bold text-foreground">
                       Active Contributor
                     </p>
                   </div>
@@ -153,12 +146,12 @@ export default function About() {
               </motion.div>
             </motion.div>
 
-            {/* GitHub Heatmap Section */}
+            {/* GitHub Heatmap Section - HIDDEN ON MOBILE (hidden sm:block) */}
             <motion.div
               variants={itemVariants}
-              className="w-full mx-auto lg:mx-0"
+              className="hidden sm:block w-full max-w-[100vw] sm:max-w-full overflow-hidden mt-6 lg:mt-0"
             >
-              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 backdrop-blur-sm overflow-hidden">
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                     <Github className="h-4 w-4" />
@@ -174,27 +167,22 @@ export default function About() {
                   </a>
                 </div>
 
-                {/* Calendar Container */}
                 <div className="relative w-full">
-                  {/* Fade masks */}
-                  {/* <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-background/50 to-transparent z-10 pointer-events-none" /> */}
-                  {/* <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-background/50 to-transparent z-10 pointer-events-none" /> */}
-
-                  {/* WE USE THE 'hide-scrollbar' CLASS HERE 
-                      This is defined in the <style> tag above 
-                  */}
-                  <div className="flex justify-center w-full pb-2">
-                    {mounted && GitHubCalendar ? (
-                      <GitHubCalendar
-                        username="prasangeet"
-                        theme={theme}
-                        blockSize={6}
-                        blockMargin={3}
-                        blockRadius={1}
-                      />
-                    ) : (
-                      <div className="h-[100px] w-full animate-pulse bg-muted/10 rounded-lg" />
-                    )}
+                  <div className="flex overflow-x-auto pb-2 w-full touch-pan-x">
+                    <div className="min-w-fit mx-auto lg:mx-0">
+                      {mounted && GitHubCalendar ? (
+                        <GitHubCalendar
+                          username="prasangeet"
+                          theme={theme}
+                          fontSize={12}
+                          blockSize={11}
+                          blockMargin={4}
+                          blockRadius={2}
+                        />
+                      ) : (
+                        <div className="h-[120px] w-full animate-pulse bg-muted/10 rounded-lg" />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -202,16 +190,22 @@ export default function About() {
           </motion.div>
 
           {/* --- Right Column: Text Content --- */}
-          <motion.div className="space-y-8" variants={containerVariants}>
-            <motion.div className="space-y-4" variants={itemVariants}>
+          <motion.div
+            className="space-y-6 sm:space-y-8"
+            variants={containerVariants}
+          >
+            <motion.div
+              className="space-y-3 sm:space-y-4 text-center lg:text-left"
+              variants={itemVariants}
+            >
               <h2 className="text-3xl font-bold sm:text-4xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 About Me
               </h2>
-              <motion.div className="h-1 w-12 bg-gradient-to-r from-primary to-blue-500" />
+              <motion.div className="h-1 w-12 bg-gradient-to-r from-primary to-blue-500 mx-auto lg:mx-0" />
             </motion.div>
 
             <motion.div
-              className="space-y-4 text-muted-foreground leading-relaxed text-lg"
+              className="space-y-4 text-muted-foreground leading-relaxed text-base sm:text-lg text-center lg:text-left"
               variants={itemVariants}
             >
               <p>
@@ -241,13 +235,13 @@ export default function About() {
             </motion.div>
 
             {/* Info Cards Grid */}
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
               <motion.div
                 className="group rounded-xl border border-primary/20 bg-primary/5 p-4 hover:bg-primary/10 transition-colors"
                 variants={itemVariants}
               >
                 <div className="flex items-start gap-3">
-                  <div className="mt-1 rounded-lg bg-primary/20 p-2 text-primary">
+                  <div className="mt-1 rounded-lg bg-primary/20 p-2 text-primary shrink-0">
                     <GraduationCap className="h-5 w-5" />
                   </div>
                   <div>
@@ -268,7 +262,7 @@ export default function About() {
                 variants={itemVariants}
               >
                 <div className="flex items-start gap-3">
-                  <div className="mt-1 rounded-lg bg-yellow-500/20 p-2 text-yellow-500">
+                  <div className="mt-1 rounded-lg bg-yellow-500/20 p-2 text-yellow-500 shrink-0">
                     <Award className="h-5 w-5" />
                   </div>
                   <div>
@@ -277,15 +271,15 @@ export default function About() {
                     </h3>
                     <ul className="mt-1 space-y-1 text-xs text-muted-foreground">
                       <li className="flex items-center gap-1">
-                        <ArrowUpRight className="h-3 w-3 text-green-500" />
+                        <ArrowUpRight className="h-3 w-3 text-green-500 shrink-0" />
                         A* Grade in DSA
                       </li>
                       <li className="flex items-center gap-1">
-                        <ArrowUpRight className="h-3 w-3 text-green-500" />
+                        <ArrowUpRight className="h-3 w-3 text-green-500 shrink-0" />
                         Core Member, DevlUp Labs
                       </li>
                       <li className="flex items-center gap-1">
-                        <ArrowUpRight className="h-3 w-3 text-green-500" />
+                        <ArrowUpRight className="h-3 w-3 text-green-500 shrink-0" />
                         Hackathon Winner
                       </li>
                     </ul>
