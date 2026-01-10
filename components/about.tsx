@@ -1,0 +1,301 @@
+"use client";
+
+import { motion } from "framer-motion";
+import {
+  GraduationCap,
+  Award,
+  Terminal,
+  ArrowUpRight,
+  Github,
+  ExternalLink,
+} from "lucide-react";
+// Import kept exactly as requested
+import { GitHubCalendar } from "react-github-calendar";
+import { useState, useEffect } from "react";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+    },
+  },
+};
+
+const imageVariants = {
+  hidden: { opacity: 0, scale: 0.8, rotate: -5 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    rotate: 0,
+    transition: {
+      duration: 0.8,
+      type: "spring",
+      bounce: 0.4,
+    },
+  },
+  float: {
+    y: [-10, 10],
+    transition: {
+      duration: 3,
+      repeat: Infinity,
+      repeatType: "reverse" as const,
+      ease: "easeInOut",
+    },
+  },
+};
+
+export default function About() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const theme = {
+    light: [
+      "rgba(255, 255, 255, 0.05)",
+      "#0e7490",
+      "#06b6d4",
+      "#22d3ee",
+      "#67e8f9",
+    ],
+    dark: [
+      "rgba(255, 255, 255, 0.05)",
+      "#0e7490",
+      "#06b6d4",
+      "#22d3ee",
+      "#67e8f9",
+    ],
+  };
+
+  return (
+    <section
+      id="about"
+      className="border-b border-border/50 bg-gradient-to-b from-transparent via-primary/5 to-transparent relative overflow-hidden w-full"
+    >
+      {/* --- CSS TRICK: This style block forces the scrollbar to vanish --- */}
+      <style jsx global>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none; /* IE and Edge */
+          scrollbar-width: none; /* Firefox */
+        }
+      `}</style>
+
+      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8 relative z-10 w-full">
+        <motion.div
+          className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-start"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVariants}
+        >
+          {/* --- Left Column: Image & Heatmap --- */}
+          <motion.div
+            className="relative flex flex-col gap-8"
+            variants={containerVariants}
+          >
+            <div className="absolute top-0 left-0 -inset-4 bg-gradient-to-r from-primary to-blue-600 rounded-full blur-3xl opacity-20 animate-pulse pointer-events-none" />
+
+            {/* Profile Image */}
+            <motion.div
+              className="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto lg:mx-0"
+              variants={imageVariants}
+            >
+              <motion.div
+                className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-primary via-blue-500 to-purple-500 p-1"
+                animate="float"
+                variants={imageVariants}
+              >
+                <div className="h-full w-full overflow-hidden rounded-xl bg-background">
+                  <img
+                    src="https://avatars.githubusercontent.com/u/142200325?v=4"
+                    alt="Prasangeet Dongre"
+                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="absolute -bottom-6 -right-6 rounded-xl border border-border/50 bg-background/80 p-4 backdrop-blur-md shadow-xl"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/10 text-green-500">
+                    <Terminal className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">
+                      Coding Streak
+                    </p>
+                    <p className="text-sm font-bold text-foreground">
+                      Active Contributor
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* GitHub Heatmap Section */}
+            <motion.div
+              variants={itemVariants}
+              className="w-full mx-auto lg:mx-0"
+            >
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 backdrop-blur-sm overflow-hidden">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Github className="h-4 w-4" />
+                    GitHub Contributions
+                  </div>
+                  <a
+                    href="https://github.com/prasangeet"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline flex items-center gap-1"
+                  >
+                    View Profile <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+
+                {/* Calendar Container */}
+                <div className="relative w-full">
+                  {/* Fade masks */}
+                  {/* <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-background/50 to-transparent z-10 pointer-events-none" /> */}
+                  {/* <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-background/50 to-transparent z-10 pointer-events-none" /> */}
+
+                  {/* WE USE THE 'hide-scrollbar' CLASS HERE 
+                      This is defined in the <style> tag above 
+                  */}
+                  <div className="flex justify-center w-full pb-2">
+                    {mounted && GitHubCalendar ? (
+                      <GitHubCalendar
+                        username="prasangeet"
+                        theme={theme}
+                        blockSize={6}
+                        blockMargin={3}
+                        blockRadius={1}
+                      />
+                    ) : (
+                      <div className="h-[100px] w-full animate-pulse bg-muted/10 rounded-lg" />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* --- Right Column: Text Content --- */}
+          <motion.div className="space-y-8" variants={containerVariants}>
+            <motion.div className="space-y-4" variants={itemVariants}>
+              <h2 className="text-3xl font-bold sm:text-4xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                About Me
+              </h2>
+              <motion.div className="h-1 w-12 bg-gradient-to-r from-primary to-blue-500" />
+            </motion.div>
+
+            <motion.div
+              className="space-y-4 text-muted-foreground leading-relaxed text-lg"
+              variants={itemVariants}
+            >
+              <p>
+                I'm a B.Tech student in{" "}
+                <span className="text-foreground font-semibold">
+                  Chemical Engineering
+                </span>{" "}
+                with a minor in{" "}
+                <span className="text-primary font-semibold">
+                  Artificial Intelligence
+                </span>{" "}
+                at IIT Jodhpur.
+              </p>
+              <p>
+                My passion lies at the intersection of full-stack development
+                and machine learning. With a strong foundation in{" "}
+                <span className="text-foreground">DSA and System Design</span>,
+                I excel at building scalable applications that solve real-world
+                problems.
+              </p>
+              <p>
+                Currently serving as a Core Member of{" "}
+                <span className="text-blue-400 font-semibold">DevlUp Labs</span>
+                , IIT Jodhpur's open-source community, where I contribute to
+                innovative projects and mentor fellow developers.
+              </p>
+            </motion.div>
+
+            {/* Info Cards Grid */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <motion.div
+                className="group rounded-xl border border-primary/20 bg-primary/5 p-4 hover:bg-primary/10 transition-colors"
+                variants={itemVariants}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 rounded-lg bg-primary/20 p-2 text-primary">
+                    <GraduationCap className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">Education</h3>
+                    <p className="text-sm text-muted-foreground">IIT Jodhpur</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Chemical Eng. + AI Minor
+                    </p>
+                    <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                      CGPA: 8.66
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="group rounded-xl border border-primary/20 bg-primary/5 p-4 hover:bg-primary/10 transition-colors"
+                variants={itemVariants}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 rounded-lg bg-yellow-500/20 p-2 text-yellow-500">
+                    <Award className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">
+                      Achievements
+                    </h3>
+                    <ul className="mt-1 space-y-1 text-xs text-muted-foreground">
+                      <li className="flex items-center gap-1">
+                        <ArrowUpRight className="h-3 w-3 text-green-500" />
+                        A* Grade in DSA
+                      </li>
+                      <li className="flex items-center gap-1">
+                        <ArrowUpRight className="h-3 w-3 text-green-500" />
+                        Core Member, DevlUp Labs
+                      </li>
+                      <li className="flex items-center gap-1">
+                        <ArrowUpRight className="h-3 w-3 text-green-500" />
+                        Hackathon Winner
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
