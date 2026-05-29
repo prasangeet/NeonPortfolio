@@ -52,11 +52,10 @@ export default function Navigation() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "border-b border-border/40 bg-background/60 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60"
-          : "bg-transparent border-transparent"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+        ? "border-b border-border/40 bg-background/60 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60"
+        : "bg-transparent border-transparent"
+        }`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
@@ -83,11 +82,10 @@ export default function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative px-4 py-1.5 text-sm font-medium transition-colors ${
-                    activeSection === item.href
-                      ? "text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`relative px-4 py-1.5 text-sm font-medium transition-colors ${activeSection === item.href
+                    ? "text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
                   onClick={() => setActiveSection(item.href)}
                 >
                   {/* Floating Pill Animation */}
@@ -110,7 +108,7 @@ export default function Navigation() {
             {/* Resume Button */}
             <Button size="sm" className="gap-2 hidden lg:flex" asChild>
               <a
-                href="https://drive.google.com/file/d/1EZyUgZweracyBBKypb7ooRyuXYMKyci5/view"
+                href="https://drive.google.com/file/d/1wksZ0nhH6sSytIQQZFpVKDIc0yzgCX7_/view?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -157,11 +155,10 @@ export default function Navigation() {
                 >
                   <Link
                     href={item.href}
-                    className={`block text-lg font-medium ${
-                      activeSection === item.href
-                        ? "text-primary pl-4 border-l-2 border-primary"
-                        : "text-muted-foreground pl-4 border-l-2 border-transparent"
-                    }`}
+                    className={`block text-lg font-medium ${activeSection === item.href
+                      ? "text-primary pl-4 border-l-2 border-primary"
+                      : "text-muted-foreground pl-4 border-l-2 border-transparent"
+                      }`}
                     onClick={() => setIsOpen(false)}
                   >
                     {item.label}
@@ -189,6 +186,6 @@ export default function Navigation() {
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </nav >
   );
 }

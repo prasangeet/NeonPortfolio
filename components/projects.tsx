@@ -29,7 +29,7 @@ import {
 // Helper to map tech names to icons
 const getTechIcon = (techName: string) => {
   const normalize = (str: string) => str.toLowerCase().replace(/[\s\.]/g, "")
-  
+
   const map: Record<string, React.ElementType> = {
     react: SiReact,
     "next.js": SiNextdotjs,
@@ -82,6 +82,33 @@ const itemVariants = {
 export default function Projects() {
   const projects = [
     {
+      name: "SAM",
+      description:
+        "A modular local-first AI voice assistant featuring semantic memory, asynchronous cognition pipelines, autonomous tool execution, and a Qt-based desktop control center.",
+      tech: [
+        "Python",
+        "Ollama",
+        "LLaMA 3",
+        "Faster-Whisper",
+        "SQLite",
+        "NetworkX",
+        "Qt/PySide6"
+      ],
+      github: "https://github.com/prasangeet/Sam",
+      status: "May 2026 - Present",
+      featured: true,
+    },
+    {
+      name: "CollabDocs",
+      description:
+        "Real-time collaborative editing platform supporting state synchronization and concurrent multi-user document updates with low broadcast latency.",
+      tech: ["Next.js", "NestJS", "PostgreSQL", "Socket.IO", "Prisma"],
+      github: "https://github.com/Mayu-infinite/collab-frontend.git",
+      live: "https://collab-frontend-sigma.vercel.app/",
+      status: "May 2026 - Present",
+      featured: true,
+    },
+    {
       name: "NeutronVPN",
       description:
         "A secure, high-performance VPN solution with WireGuard encryption, Electron.js client for cross-platform control, and scalable DigitalOcean deployment.",
@@ -112,7 +139,7 @@ export default function Projects() {
         "Full-stack social platform with React Query state management, Firebase/JWT auth, and Cloudinary media handling.",
       tech: [
         "Next.js",
-        "React Query", 
+        "React Query",
         "TailwindCSS",
         "Django",
         "PostgreSQL",
@@ -120,22 +147,6 @@ export default function Projects() {
         "Cloudinary"
       ],
       github: "https://github.com/prasangeet/Campus-Connect",
-      status: "May 2025",
-    },
-    {
-      name: "Diabetic Retinopathy Detection",
-      description:
-        "Deep learning project implementing multiclass and binary classification for diabetic retinopathy detection using PyTorch and CNN architectures.",
-      tech: ["Python", "PyTorch", "Deep Learning", "Jupyter"],
-      github: "https://github.com/prasangeet/Diabetic-Retinopathy",
-      status: "Nov 2024",
-    },
-    {
-      name: "FlowForge",
-      description:
-        "Lightweight project and task management platform with team collaboration, deadline tracking, and progress communication features.",
-      tech: ["JavaScript", "Next.js", "Firebase", "Node.js", "TailwindCSS"],
-      github: "https://github.com/prasangeet/FlowForge",
       status: "May 2025",
     },
   ]
@@ -184,11 +195,11 @@ export default function Projects() {
                     <div className="rounded-lg bg-primary/10 p-3 text-primary ring-1 ring-primary/20">
                       <Folder className="h-6 w-6" />
                     </div>
-                    
+
                     <div className="flex gap-2">
-                      <a 
-                        href={project.github} 
-                        target="_blank" 
+                      <a
+                        href={project.github}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-foreground transition-colors p-1"
                         aria-label="GitHub Repo"
@@ -204,7 +215,7 @@ export default function Projects() {
                   <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-2">
                     {project.name}
                   </h3>
-                  
+
                   <p className="text-sm text-muted-foreground mb-6 leading-relaxed line-clamp-3">
                     {project.description}
                   </p>
@@ -228,10 +239,10 @@ export default function Projects() {
 
                 {/* Footer: Date & Action */}
                 <div className="flex items-center justify-between pt-4 border-t border-border/50 mt-auto">
-                   <span className="text-xs font-mono text-muted-foreground">
-                      {project.status.split(' - ')[0]}
-                   </span>
-                   <Button asChild variant="link" size="sm" className="p-0 h-auto text-primary hover:text-primary/80 group-hover:underline decoration-primary/50 underline-offset-4">
+                  <span className="text-xs font-mono text-muted-foreground">
+                    {project.status.split(' - ')[0]}
+                  </span>
+                  <Button asChild variant="link" size="sm" className="p-0 h-auto text-primary hover:text-primary/80 group-hover:underline decoration-primary/50 underline-offset-4">
                     <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
                       Code <ArrowUpRight className="h-3 w-3" />
                     </a>

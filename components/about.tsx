@@ -235,7 +235,7 @@ export default function About() {
             </motion.div>
 
             {/* Info Cards Grid */}
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-1">
               <motion.div
                 className="group rounded-xl border border-primary/20 bg-primary/5 p-4 hover:bg-primary/10 transition-colors"
                 variants={itemVariants}
@@ -257,35 +257,31 @@ export default function About() {
                 </div>
               </motion.div>
 
-              <motion.div
-                className="group rounded-xl border border-primary/20 bg-primary/5 p-4 hover:bg-primary/10 transition-colors"
-                variants={itemVariants}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="mt-1 rounded-lg bg-yellow-500/20 p-2 text-yellow-500 shrink-0">
-                    <Award className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">
-                      Achievements
-                    </h3>
-                    <ul className="mt-1 space-y-1 text-xs text-muted-foreground">
-                      <li className="flex items-center gap-1">
-                        <ArrowUpRight className="h-3 w-3 text-green-500 shrink-0" />
-                        A* Grade in DSA
-                      </li>
-                      <li className="flex items-center gap-1">
-                        <ArrowUpRight className="h-3 w-3 text-green-500 shrink-0" />
-                        Core Member, DevlUp Labs
-                      </li>
-                      <li className="flex items-center gap-1">
-                        <ArrowUpRight className="h-3 w-3 text-green-500 shrink-0" />
-                        Hackathon Winner
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </motion.div>
+              {/* <motion.div */}
+              {/*   className="group rounded-xl border border-primary/20 bg-primary/5 p-4 hover:bg-primary/10 transition-colors" */}
+              {/*   variants={itemVariants} */}
+              {/* > */}
+              {/*   <div className="flex items-start gap-3"> */}
+              {/*     <div className="mt-1 rounded-lg bg-yellow-500/20 p-2 text-yellow-500 shrink-0"> */}
+              {/*       <Award className="h-5 w-5" /> */}
+              {/*     </div> */}
+              {/*     <div> */}
+              {/*       <h3 className="font-semibold text-foreground"> */}
+              {/*         Achievements */}
+              {/*       </h3> */}
+              {/*       <ul className="mt-1 space-y-1 text-xs text-muted-foreground"> */}
+              {/*         <li className="flex items-center gap-1"> */}
+              {/*           <ArrowUpRight className="h-3 w-3 text-green-500 shrink-0" /> */}
+              {/*           A* Grade in DSA */}
+              {/*         </li> */}
+              {/*         <li className="flex items-center gap-1"> */}
+              {/*           <ArrowUpRight className="h-3 w-3 text-green-500 shrink-0" /> */}
+              {/*           Open Source contributor GSSoC'26 */}
+              {/*         </li> */}
+              {/*       </ul> */}
+              {/*     </div> */}
+              {/*   </div> */}
+              {/* </motion.div> */}
             </div>
           </motion.div>
         </motion.div>

@@ -61,6 +61,30 @@ export default function Experience() {
       ],
       tech: ["Next.js", "Django", "PostgreSQL", "React", "REST API"],
     },
+    {
+      title: "Multimodal Research Paper Database",
+      role: "Research Intern",
+      company: "IIT Hyderabad",
+      type: "Research",
+      period: "May 2026 - Present",
+      description:
+        "Building a multimodal research paper database by extracting textual, tabular, and visual information from scientific publications for retrieval-augmented generation (RAG) and question-answering systems.",
+      highlights: [
+        "Processed 100+ research papers into structured knowledge assets",
+        "Implemented YOLO-based layout detection across 2,000+ document regions",
+        "Integrated Gemma & Gemini to convert 1,000+ scientific figures into structured JSON",
+      ],
+      tech: [
+        "Python",
+        "YOLO",
+        "Gemma",
+        "Gemini",
+        "PyMuPDF",
+        "OpenCV",
+        "RAG",
+        "PySide6",
+      ],
+    },
   ]
 
   return (
@@ -126,8 +150,8 @@ export default function Experience() {
                         </h3>
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1.5 font-medium text-primary/90">
-                             <Briefcase className="w-4 h-4" />
-                             {exp.role}
+                            <Briefcase className="w-4 h-4" />
+                            {exp.role}
                           </span>
                           <span className="hidden sm:block text-border">•</span>
                           <span className="flex items-center gap-1.5">
@@ -136,7 +160,7 @@ export default function Experience() {
                           </span>
                         </div>
                       </div>
-                      
+
                       {/* Date Badge */}
                       <div className="flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary whitespace-nowrap">
                         <Calendar className="w-3.5 h-3.5" />
