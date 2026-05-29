@@ -8,6 +8,7 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+// Reverted back to valid .svg endpoints
 const logos = [
   {
     name: "React",
@@ -89,12 +90,7 @@ export function Scene3D() {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // --- Configuration ---
-    // This value controls how high/low the globe sits.
-    // -8 raises it so it's "lying at the bottom" but clearly visible.
     const GLOBE_Y_POSITION = -9;
-
-    // --- Base Setup ---
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(
@@ -103,7 +99,6 @@ export function Scene3D() {
       0.1,
       1000,
     );
-    // Position camera back enough to see the whole system
     camera.position.set(0, 0, 45);
 
     const renderer = new THREE.WebGLRenderer({
@@ -120,7 +115,6 @@ export function Scene3D() {
     renderer.toneMapping = THREE.ReinhardToneMapping;
     containerRef.current.appendChild(renderer.domElement);
 
-    // --- Orbit Controls ---
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
@@ -128,12 +122,8 @@ export function Scene3D() {
     controls.enablePan = false;
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.5;
-
-    // CRITICAL FIX: Set the target to exactly where the globe is.
-    // This ensures the camera rotates around the globe, not empty space.
     controls.target.set(0, GLOBE_Y_POSITION, 0);
 
-    // --- Post-Processing ---
     const renderScene = new RenderPass(scene, camera);
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(
@@ -150,12 +140,11 @@ export function Scene3D() {
     composer.addPass(bloomPass);
     composer.addPass(new OutputPass());
 
-    // --- Objects ---
     const mainGroup = new THREE.Group();
     mainGroup.position.y = GLOBE_Y_POSITION;
     scene.add(mainGroup);
 
-    // Core (Black Hole)
+    // Core
     const coreGeometry = new THREE.IcosahedronGeometry(10, 2);
     const coreMaterial = new THREE.MeshBasicMaterial({
       color: 0x000000,
@@ -176,35 +165,56 @@ export function Scene3D() {
     wireframeSphere.scale.set(1.01, 1.01, 1.01);
     mainGroup.add(wireframeSphere);
 
-    // Icons
+    // Icons Setup
     const textureLoader = new THREE.TextureLoader();
     const iconSprites: THREE.Sprite[] = [];
+    const activeBlobUrls: string[] = [];
 
     logos.forEach((logo, i) => {
-      textureLoader.load(logo.url, (texture) => {
-        texture.colorSpace = THREE.SRGBColorSpace;
-        const material = new THREE.SpriteMaterial({
-          map: texture,
-          transparent: true,
-          opacity: 0.9,
-          depthWrite: false,
+      // FIX: Fetch SVG code to inject explicit rasterization dimensions
+      fetch(logo.url)
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.text();
+        })
+        .then((svgText) => {
+          // Force explicit width/height into the root <svg> tag if missing
+          if (!svgText.includes("width=")) {
+            svgText = svgText.replace("<svg", '<svg width="128" height="128"');
+          }
+
+          // Create a local blob URL that WebGL can safely read as a discrete raster boundary
+          const blob = new Blob([svgText], { type: "image/svg+xml" });
+          const blobUrl = URL.createObjectURL(blob);
+          activeBlobUrls.push(blobUrl);
+
+          textureLoader.load(blobUrl, (texture) => {
+            texture.colorSpace = THREE.SRGBColorSpace;
+            const material = new THREE.SpriteMaterial({
+              map: texture,
+              transparent: true,
+              opacity: 0.9,
+              depthWrite: false,
+            });
+            const sprite = new THREE.Sprite(material);
+
+            const phi = Math.acos(-1 + (2 * i) / logos.length);
+            const theta = Math.sqrt(logos.length * Math.PI) * phi;
+            const radius = 16;
+
+            sprite.position.setFromSphericalCoords(radius, phi, theta);
+            sprite.scale.set(2.5, 2.5, 2.5);
+
+            mainGroup.add(sprite);
+            iconSprites.push(sprite);
+          });
+        })
+        .catch((err) => {
+          console.error(`Failed to inline and load SVG for ${logo.name}:`, err);
         });
-        const sprite = new THREE.Sprite(material);
-
-        const phi = Math.acos(-1 + (2 * i) / logos.length);
-        const theta = Math.sqrt(logos.length * Math.PI) * phi;
-        const radius = 16;
-
-        sprite.position.setFromSphericalCoords(radius, phi, theta);
-        sprite.scale.set(2.5, 2.5, 2.5);
-
-        mainGroup.add(sprite);
-        iconSprites.push(sprite);
-      });
     });
 
-    // Particles (Stars)
-    // Note: We add these to 'scene', not 'mainGroup', so they don't rotate with the globe drag
+    // Stars Particles
     const particleCount = 200;
     const particlesGeo = new THREE.BufferGeometry();
     const posArray = new Float32Array(particleCount * 3);
@@ -225,7 +235,7 @@ export function Scene3D() {
     const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
     scene.add(particlesMesh);
 
-    // --- Animation ---
+    // Animation loop
     const clock = new THREE.Clock();
     let animationId: number;
 
@@ -235,42 +245,34 @@ export function Scene3D() {
 
       controls.update();
 
-      // Gentle floating animation for icons
       iconSprites.forEach((sprite, i) => {
-        // Just a tiny wobble
         sprite.scale.setScalar(2.5 + Math.sin(time * 2 + i) * 0.1);
       });
 
-      // Ambient particle rotation
       particlesMesh.rotation.y = time * 0.05;
 
       composer.render();
     };
     animate();
 
-    // --- Resize & Offset ---
+    // Resize handlers
     const handleResize = () => {
       if (!containerRef.current) return;
       const width = containerRef.current.clientWidth;
       const height = containerRef.current.clientHeight;
 
+      if (width === 0 || height === 0) return;
+
       camera.aspect = width / height;
 
-      // OPTICAL OFFSET:
-      // Since the globe is at Y = -9, if we look directly at it, it will be in the CENTER of the screen.
-      // We want it at the BOTTOM.
-      // setViewOffset allows us to shift the window so the center point is physically lower on the screen.
-      // (val 1: fullWidth, val 2: fullHeight, val 3: x-offset, val 4: y-offset, val 5: width, val 6: height)
-      // A negative Y offset shifts the view UP, pushing the object DOWN.
-      const verticalOffset = -height * 0.15; // 15% offset
-      camera.setViewOffset(width, height, 0, verticalOffset, width, height);
+      const virtualHeight = height * 1.3;
+      camera.setViewOffset(width, virtualHeight, 0, 0, width, height);
 
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
       composer.setSize(width, height);
     };
 
-    // Initial call
     handleResize();
     window.addEventListener("resize", handleResize);
 
@@ -280,6 +282,8 @@ export function Scene3D() {
       controls.dispose();
       renderer.dispose();
       composer.dispose();
+      // Clean up memory allocations
+      activeBlobUrls.forEach((url) => URL.revokeObjectURL(url));
     };
   }, []);
 

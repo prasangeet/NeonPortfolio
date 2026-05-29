@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useState, useEffect } from "react"
-import { Menu, X, Download, Terminal } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { Menu, X, Download, Terminal } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 export default function Navigation() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState("")
-  const [scrolled, setScrolled] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
+  const [scrolled, setScrolled] = useState(false);
 
   const navItems = [
     { href: "#about", label: "About" },
@@ -17,38 +17,38 @@ export default function Navigation() {
     { href: "#projects", label: "Projects" },
     { href: "#skills", label: "Skills" },
     { href: "#contact", label: "Contact" },
-  ]
+  ];
 
   // Handle Scroll Effects (Glassmorphisim & Active Link)
   useEffect(() => {
     const handleScroll = () => {
       // 1. Handle Navbar Background
-      setScrolled(window.scrollY > 20)
+      setScrolled(window.scrollY > 20);
 
       // 2. Handle Active Section Spy
-      const sections = navItems.map((item) => item.href.substring(1))
-      const scrollPosition = window.scrollY + 100 // Offset for sticky nav
+      const sections = navItems.map((item) => item.href.substring(1));
+      const scrollPosition = window.scrollY + 100; // Offset for sticky nav
 
       for (const section of sections) {
-        const element = document.getElementById(section)
+        const element = document.getElementById(section);
         if (element) {
-          const offsetTop = element.offsetTop
-          const offsetHeight = element.offsetHeight
+          const offsetTop = element.offsetTop;
+          const offsetHeight = element.offsetHeight;
 
           if (
             scrollPosition >= offsetTop &&
             scrollPosition < offsetTop + offsetHeight
           ) {
-            setActiveSection(`#${section}`)
-            break
+            setActiveSection(`#${section}`);
+            break;
           }
         }
       }
-    }
+    };
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [navItems])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [navItems]);
 
   return (
     <nav
@@ -60,9 +60,12 @@ export default function Navigation() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl group" onClick={() => window.scrollTo(0,0)}>
+          <Link
+            href="/"
+            className="flex items-center gap-2 font-bold text-xl group"
+            onClick={() => window.scrollTo(0, 0)}
+          >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
               <Terminal className="h-5 w-5" />
             </div>
@@ -106,7 +109,11 @@ export default function Navigation() {
 
             {/* Resume Button */}
             <Button size="sm" className="gap-2 hidden lg:flex" asChild>
-              <a href="https://drive.google.com/file/d/1EZyUgZweracyBBKypb7ooRyuXYMKyci5/view" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://drive.google.com/file/d/1EZyUgZweracyBBKypb7ooRyuXYMKyci5/view"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Download className="h-4 w-4" />
                 Resume
               </a>
@@ -120,7 +127,11 @@ export default function Navigation() {
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle menu"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
         </div>
@@ -163,8 +174,12 @@ export default function Navigation() {
                 transition={{ delay: 0.3 }}
                 className="pt-4"
               >
-                 <Button className="w-full gap-2" asChild>
-                  <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
+                <Button className="w-full gap-2" asChild>
+                  <a
+                    href="https://drive.google.com/file/d/1EZyUgZweracyBBKypb7ooRyuXYMKyci5/view"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <Download className="h-4 w-4" />
                     Download Resume
                   </a>
@@ -175,5 +190,5 @@ export default function Navigation() {
         )}
       </AnimatePresence>
     </nav>
-  )
+  );
 }
