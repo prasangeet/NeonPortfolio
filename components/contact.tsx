@@ -1,20 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Mail,
   Linkedin,
   Github,
-  Twitter,
   Copy,
   Check,
   MapPin,
   Send,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
+import BorderGlow from "@/components/BorderGlow";
+import SpecularButton from "@/components/SpecularButton";
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -25,7 +25,7 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
@@ -37,6 +37,19 @@ const itemVariants = {
   },
 };
 
+function XIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
 export default function Contact() {
   const [copied, setCopied] = useState(false);
   const email = "prasangeetdongre1@gmail.com";
@@ -47,24 +60,25 @@ export default function Contact() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleSendEmail = () => {
+    window.location.href = `mailto:${email}`;
+  };
+
   const socialLinks = [
     {
       name: "GitHub",
       href: "https://github.com/prasangeet",
       icon: Github,
-      color: "hover:bg-zinc-800 hover:text-white hover:border-zinc-700",
     },
     {
       name: "LinkedIn",
       href: "https://linkedin.com/in/prasangeetdongre01",
       icon: Linkedin,
-      color: "hover:bg-blue-600 hover:text-white hover:border-blue-500",
     },
     {
-      name: "Twitter", // Shortened name for mobile fit
+      name: "X",
       href: "https://x.com/prasangeetdgr",
-      icon: Twitter,
-      color: "hover:bg-black hover:text-white hover:border-zinc-800",
+      icon: XIcon,
     },
   ];
 
@@ -73,9 +87,6 @@ export default function Contact() {
       id="contact"
       className="relative border-b border-border/50 bg-gradient-to-b from-transparent via-primary/5 to-transparent py-24 md:py-32 lg:py-48 min-h-[80vh] flex flex-col justify-center overflow-hidden"
     >
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
-
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <motion.div
           className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-start"
@@ -117,96 +128,155 @@ export default function Contact() {
 
           {/* --- Right Column: Interactive Cards --- */}
           <div className="space-y-6">
-            {/* 1. Email Card (The Hero Action) */}
+            {/* 1. Email Card (Hero Action) */}
             <motion.div variants={itemVariants}>
-              <div className="group rounded-2xl border border-primary/20 bg-background/50 p-5 sm:p-6 backdrop-blur-md shadow-lg transition-all hover:shadow-primary/10">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 sm:p-3 rounded-xl bg-primary/10 text-primary">
-                      <Mail className="h-5 w-5 sm:h-6 sm:w-6" />
+              <BorderGlow
+                edgeSensitivity={30}
+                glowColor="40 80 80"
+                backgroundColor="#120F17"
+                borderRadius={28}
+                glowRadius={40}
+                glowIntensity={1}
+                coneSpread={25}
+                animated={false}
+                colors={["#c084fc", "#f472b6", "#38bdf8"]}
+              >
+                <div style={{ padding: "1.5rem" }} className="overflow-hidden">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 sm:p-3 rounded-xl bg-primary/10 text-primary">
+                        <Mail className="h-5 w-5 sm:h-6 sm:w-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-foreground text-sm sm:text-base">
+                          Email Me
+                        </h3>
+                        <p className="text-xs text-muted-foreground">
+                          Best way to reach out
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground text-sm sm:text-base">
-                        Email Me
-                      </h3>
-                      <p className="text-xs text-muted-foreground">
-                        Best way to reach out
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    asChild
-                    size="icon"
-                    variant="ghost"
-                    className="rounded-full hover:bg-primary/10 h-8 w-8 sm:h-10 sm:w-10"
-                  >
-                    <a href={`mailto:${email}`}>
-                      <Send className="h-4 w-4 text-primary" />
-                    </a>
-                  </Button>
-                </div>
 
-                <div className="flex items-center justify-between rounded-xl bg-secondary/50 p-3 border border-border/50 group-hover:border-primary/30 transition-colors gap-2">
-                  <span className="text-xs sm:text-sm font-mono text-muted-foreground truncate flex-1 min-w-0">
-                    {email}
-                  </span>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 gap-1.5 text-xs font-medium hover:bg-background shrink-0"
-                    onClick={handleCopy}
-                  >
-                    <AnimatePresence mode="wait" initial={false}>
-                      {copied ? (
-                        <motion.span
-                          key="check"
-                          initial={{ scale: 0.5, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          exit={{ scale: 0.5, opacity: 0 }}
-                          className="flex items-center gap-1.5 text-green-500"
-                        >
-                          <Check className="h-3.5 w-3.5" />
-                          <span className="hidden sm:inline">Copied</span>
-                        </motion.span>
-                      ) : (
-                        <motion.span
-                          key="copy"
-                          initial={{ scale: 0.5, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          exit={{ scale: 0.5, opacity: 0 }}
-                          className="flex items-center gap-1.5"
-                        >
-                          <Copy className="h-3.5 w-3.5" />
-                          <span className="hidden sm:inline">Copy</span>
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </Button>
+                    <SpecularButton
+                      size="lg"
+                      radius={18}
+                      tint="#ffffff"
+                      tintOpacity={0}
+                      blur={0}
+                      textColor="#f5f5f5"
+                      lineColor="#ffffff"
+                      baseColor="#525252"
+                      intensity={1}
+                      shineSize={10}
+                      shineFade={40}
+                      thickness={1}
+                      speed={0.35}
+                      followMouse
+                      proximity={250}
+                      autoAnimate={false}
+                      onClick={handleSendEmail}
+                    >
+                      <span className="flex items-center gap-2 text-xs sm:text-sm font-medium">
+                        Send <Send className="h-3.5 w-3.5" />
+                      </span>
+                    </SpecularButton>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-xl bg-secondary/50 p-3 border border-border/50 group-hover:border-primary/30 transition-colors gap-2">
+                    <span className="text-xs sm:text-sm font-mono text-muted-foreground truncate flex-1 min-w-0">
+                      {email}
+                    </span>
+
+                    <SpecularButton
+                      size="lg"
+                      radius={12}
+                      tint="#ffffff"
+                      tintOpacity={0}
+                      blur={0}
+                      textColor="#f5f5f5"
+                      lineColor="#ffffff"
+                      baseColor="#333333"
+                      intensity={1}
+                      shineSize={8}
+                      shineFade={40}
+                      thickness={1}
+                      speed={0.35}
+                      followMouse
+                      proximity={250}
+                      autoAnimate={false}
+                      onClick={handleCopy}
+                    >
+                      <AnimatePresence mode="wait" initial={false}>
+                        {copied ? (
+                          <motion.span
+                            key="check"
+                            initial={{ scale: 0.5, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.5, opacity: 0 }}
+                            className="flex items-center gap-1.5 text-green-400 text-xs"
+                          >
+                            <Check className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">Copied</span>
+                          </motion.span>
+                        ) : (
+                          <motion.span
+                            key="copy"
+                            initial={{ scale: 0.5, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.5, opacity: 0 }}
+                            className="flex items-center gap-1.5 text-xs"
+                          >
+                            <Copy className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">Copy</span>
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </SpecularButton>
+                  </div>
                 </div>
-              </div>
+              </BorderGlow>
             </motion.div>
 
             {/* 2. Social Links Grid */}
             <motion.div
               variants={itemVariants}
-              // Changed grid to always be 3 columns for better density, text scales down
               className="grid grid-cols-3 gap-3 sm:gap-4"
             >
               {socialLinks.map((social, idx) => (
-                <motion.a
+                <div
                   key={idx}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex flex-col items-center justify-center gap-2 rounded-xl border border-border/50 bg-background/50 p-3 sm:p-4 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${social.color}`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  className="w-full overflow-hidden rounded-[20px]"
                 >
-                  <social.icon className="h-5 w-5 sm:h-6 sm:w-6" />
-                  <span className="text-[10px] sm:text-xs font-medium text-center">
-                    {social.name}
-                  </span>
-                </motion.a>
+                  <SpecularButton
+                    size="sm"
+                    radius={20}
+                    tint="#ffffff"
+                    tintOpacity={0}
+                    blur={0}
+                    textColor="#f5f5f5"
+                    lineColor="#ffffff"
+                    baseColor="#120F17"
+                    intensity={1}
+                    shineSize={10}
+                    shineFade={40}
+                    thickness={1}
+                    speed={0.35}
+                    followMouse
+                    proximity={250}
+                    autoAnimate={false}
+                    className="w-full h-full overflow-hidden"
+                    onClick={() =>
+                      window.open(social.href, "_blank", "noopener,noreferrer")
+                    }
+                  >
+                    <div className="flex flex-col items-center justify-center gap-2 py-4 px-2 w-full overflow-hidden">
+                      <social.icon className="h-5 w-5 sm:h-6 sm:w-6 shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">
+                        {social.name}
+                      </span>
+                    </div>
+                  </SpecularButton>
+                </div>
               ))}
             </motion.div>
           </div>
@@ -219,7 +289,7 @@ export default function Contact() {
           initial="hidden"
           whileInView="visible"
         >
-          <p>© 2025 Prasangeet Dongre.</p>
+          <p>© 2026 Prasangeet Dongre.</p>
           <p className="flex items-center gap-1">
             Built with <span className="text-red-500">♥</span> using Next.js &
             Tailwind

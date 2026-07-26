@@ -1,8 +1,16 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Github, Folder, ExternalLink, ArrowUpRight } from "lucide-react"
-import { motion } from "framer-motion"
+import {
+  Github,
+  Folder,
+  ArrowUpRight,
+  Sparkles,
+  ExternalLink,
+} from "lucide-react";
+import { motion, Variants } from "framer-motion";
+import ShinyText from "@/components/ShinyText";
+import SpecularButton from "@/components/SpecularButton";
+import BorderGlow from "@/components/BorderGlow";
 import {
   SiReact,
   SiNextdotjs,
@@ -24,11 +32,17 @@ import {
   SiJupyter,
   SiReactquery,
   SiCloudinary,
-} from "react-icons/si"
+  SiRust,
+  SiNeo4J,
+  SiNestjs,
+  SiSocketdotio,
+  SiPrisma,
+  SiDocker,
+} from "react-icons/si";
 
 // Helper to map tech names to icons
 const getTechIcon = (techName: string) => {
-  const normalize = (str: string) => str.toLowerCase().replace(/[\s\.]/g, "")
+  const normalize = (str: string) => str.toLowerCase().replace(/[\s\.]/g, "");
 
   const map: Record<string, React.ElementType> = {
     react: SiReact,
@@ -51,13 +65,21 @@ const getTechIcon = (techName: string) => {
     jupyter: SiJupyter,
     "react query": SiReactquery,
     cloudinary: SiCloudinary,
-  }
+    rust: SiRust,
+    neo4j: SiNeo4J,
+    nestjs: SiNestjs,
+    "socket.io": SiSocketdotio,
+    prisma: SiPrisma,
+    docker: SiDocker,
+  };
 
-  const key = Object.keys(map).find(k => normalize(techName).includes(normalize(k)))
-  return key ? map[key] : null
-}
+  const key = Object.keys(map).find((k) =>
+    normalize(techName).includes(normalize(k)),
+  );
+  return key ? map[key] : null;
+};
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -65,62 +87,83 @@ const containerVariants = {
       staggerChildren: 0.1,
     },
   },
-}
+};
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.6,
-      ease: "easeOut",
+      ease: [0.22, 1, 0.36, 1],
     },
   },
-}
+};
 
 export default function Projects() {
   const projects = [
     {
-      name: "SAM",
+      name: "ORION",
       description:
-        "A modular local-first AI voice assistant featuring semantic memory, asynchronous cognition pipelines, autonomous tool execution, and a Qt-based desktop control center.",
+        "Local-first AI assistant featuring a high-performance Rust terminal client, modular Python runtime, IPC over Unix Domain Sockets, and an event-driven multi-agent system with LangGraph, Neo4j, and Qdrant.",
       tech: [
+        "Rust",
         "Python",
-        "Ollama",
-        "LLaMA 3",
-        "Faster-Whisper",
-        "SQLite",
-        "NetworkX",
-        "Qt/PySide6"
+        "LangGraph",
+        "Neo4j",
+        "Qdrant",
+        "Textual",
+        "Ratatui",
       ],
-      github: "https://github.com/prasangeet/Sam",
+      github: "https://github.com/Limbo-corps/orion-cli",
       status: "May 2026 - Present",
       featured: true,
     },
     {
       name: "CollabDocs",
       description:
-        "Real-time collaborative editing platform supporting state synchronization and concurrent multi-user document updates with low broadcast latency.",
+        "Real-time collaborative editing platform using Operational Transformation and Socket.IO, sustaining sub-50ms sync across 100+ concurrent users with optimized PostgreSQL pooling.",
       tech: ["Next.js", "NestJS", "PostgreSQL", "Socket.IO", "Prisma"],
       github: "https://github.com/Mayu-infinite/collab-frontend.git",
       live: "https://collab-frontend-sigma.vercel.app/",
-      status: "May 2026 - Present",
+      status: "Dec 2025 - Jan 2026",
+      featured: true,
+    },
+    {
+      name: "Campus Connect",
+      description:
+        "Campus collaboration platform with JWT auth, RBAC, live messaging, and event management exposing 25+ REST APIs. Configured Django Channels and Redis caching to offload 40% DB traffic.",
+      tech: [
+        "Next.js",
+        "Django",
+        "PostgreSQL",
+        "Redis",
+        "Django Channels",
+        "Docker",
+      ],
+      github: "https://github.com/Limbo-corps/campus-connect",
+      status: "Jun 2026 - Present",
       featured: true,
     },
     {
       name: "NeutronVPN",
       description:
         "A secure, high-performance VPN solution with WireGuard encryption, Electron.js client for cross-platform control, and scalable DigitalOcean deployment.",
-      tech: ["Django", "Electron.js", "PostgreSQL", "WireGuard", "DigitalOcean"],
+      tech: [
+        "Django",
+        "Electron.js",
+        "PostgreSQL",
+        "WireGuard",
+        "DigitalOcean",
+      ],
       github: "https://github.com/prasangeet/NeutronVPN-linux",
       status: "Oct 2025 - Present",
-      featured: true,
     },
     {
       name: "CSRconnect",
       description:
-        "Platform connecting CSR initiatives with SDG-aligned academic research. Features PDF parsing, AI-based classification, and company mapping.",
+        "Platform mapping 50+ research proposals to SDG-aligned CSR initiatives. Reduced classification time by 80% using Gemini semantic analysis and PostgreSQL full-text search.",
       tech: ["Django", "Next.js", "PostgreSQL", "React", "TailwindCSS"],
       github: "https://github.com/prasangeet/CSRconnect",
       status: "Jan 2025 - Mar 2025",
@@ -128,38 +171,19 @@ export default function Projects() {
     {
       name: "Pathfinding Visualizer",
       description:
-        "Interactive shortest path finder using Dijkstra's and A* algorithms on OpenStreetMap data with real-time visual feedback and optimized caching.",
+        "Interactive shortest path finder using Dijkstra's and A* algorithms on OpenStreetMap data with real-time visual feedback and optimized Redis caching.",
       tech: ["Django", "PostgreSQL", "Redis", "Next.js", "MapLibre GL"],
       github: "https://github.com/prasangeet/Pathfinding-DSA-project",
       status: "Jan 2025 - Mar 2025",
     },
-    {
-      name: "Campus Connect",
-      description:
-        "Full-stack social platform with React Query state management, Firebase/JWT auth, and Cloudinary media handling.",
-      tech: [
-        "Next.js",
-        "React Query",
-        "TailwindCSS",
-        "Django",
-        "PostgreSQL",
-        "Firebase",
-        "Cloudinary"
-      ],
-      github: "https://github.com/prasangeet/Campus-Connect",
-      status: "May 2025",
-    },
-  ]
+  ];
 
   return (
     <section
       id="projects"
-      className="border-b border-border/50 bg-gradient-to-b from-transparent via-primary/5 to-transparent relative overflow-hidden"
+      className="border-b border-border/50 bg-gradient-to-b from-transparent via-primary/5 to-transparent relative overflow-hidden py-24 px-4 sm:px-6 lg:px-8"
     >
-      {/* Background Grid Pattern (Matches Hero) */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
-
-      <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 relative z-10">
+      <div className="mx-auto max-w-7xl relative z-10">
         <motion.div
           className="space-y-12"
           initial="hidden"
@@ -169,90 +193,157 @@ export default function Projects() {
         >
           {/* Header */}
           <motion.div className="space-y-4" variants={itemVariants}>
-            <h2 className="text-3xl font-bold sm:text-4xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent flex items-center gap-3">
-              Featured Projects
-              <span className="text-sm font-normal text-muted-foreground/50 border border-border/50 rounded-full px-3 py-1 hidden sm:block">
-                {projects.length} Total
+            <div className="flex items-center gap-3">
+              <h2 className="text-3xl font-bold sm:text-4xl text-[var(--foreground)] tracking-tight">
+                Featured Projects
+              </h2>
+              <span className="text-xs font-mono text-[var(--muted-foreground)] border border-[var(--border)] rounded-full px-3 py-1 glass-effect hidden sm:inline-flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3 text-[var(--primary)]" />
+                {projects.length} Built
               </span>
-            </h2>
-            <motion.div className="h-1 w-12 bg-gradient-to-r from-primary to-blue-500 rounded-full" />
+            </div>
+            <p className="text-sm text-[var(--muted-foreground)] max-w-xl">
+              <ShinyText
+                text="A showcase of full-stack platforms, distributed systems, and AI tools I've engineered."
+                disabled={false}
+                speed={4}
+              />
+            </p>
+            <motion.div className="h-1 w-12 bg-gradient-to-r from-[var(--primary)] to-blue-500 rounded-full" />
           </motion.div>
 
-          {/* Grid */}
-          <motion.div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3" variants={containerVariants}>
+          {/* Projects Grid */}
+          <motion.div
+            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            variants={containerVariants}
+          >
             {projects.map((project, index) => (
               <motion.div
                 key={index}
-                className="group relative flex flex-col justify-between rounded-xl border border-primary/20 bg-background/40 p-6 backdrop-blur-md transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2"
                 variants={itemVariants}
+                className="transition-transform duration-300 hover:-translate-y-1.5 h-full"
               >
-                {/* Gradient Glow Effect on Card Hover */}
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <BorderGlow
+                  edgeSensitivity={30}
+                  glowColor="40 80 80"
+                  backgroundColor="#120F17"
+                  borderRadius={28}
+                  glowRadius={40}
+                  glowIntensity={1}
+                  coneSpread={25}
+                  animated={false}
+                  colors={["#c084fc", "#f472b6", "#38bdf8"]}
+                >
+                  <div className="group relative flex flex-col justify-between h-full p-6">
+                    <div>
+                      {/* Card Header: Folder Icon & Links */}
+                      <div className="flex justify-between items-start mb-5">
+                        <div className="rounded-xl bg-white/5 p-3 text-[var(--foreground)] ring-1 ring-white/10 group-hover:scale-110 transition-transform duration-300">
+                          <Folder className="h-5 w-5" />
+                        </div>
 
-                <div>
-                  {/* Card Header: Folder Icon & Links */}
-                  <div className="flex justify-between items-start mb-6">
-                    <div className="rounded-lg bg-primary/10 p-3 text-primary ring-1 ring-primary/20">
-                      <Folder className="h-6 w-6" />
+                        <div className="flex items-center gap-1.5">
+                          {project.live && (
+                            <a
+                              href={project.live}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors p-1.5 rounded-lg hover:bg-white/5"
+                              aria-label="Live Demo"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          )}
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors p-1.5 rounded-lg hover:bg-white/5"
+                            aria-label="GitHub Repo"
+                          >
+                            <Github className="h-4 w-4" />
+                          </a>
+                        </div>
+                      </div>
+
+                      {/* Title & Status */}
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-lg font-bold text-[var(--foreground)] group-hover:text-purple-400 transition-colors">
+                          {project.name}
+                        </h3>
+                        {project.featured && (
+                          <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-white/5 text-slate-300 border border-white/10">
+                            Featured
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-[var(--muted-foreground)] mb-6 leading-relaxed line-clamp-3">
+                        {project.description}
+                      </p>
+
+                      {/* Tech Badges */}
+                      <div className="flex flex-wrap gap-1.5 mb-6">
+                        {project.tech.map((tech, i) => {
+                          const Icon = getTechIcon(tech);
+                          return (
+                            <div
+                              key={i}
+                              className="flex items-center gap-1.5 rounded-lg bg-white/5 border border-white/10 px-2.5 py-1 text-[11px] font-medium text-slate-300 transition-colors group-hover:border-purple-500/30 group-hover:bg-purple-500/10"
+                            >
+                              {Icon && (
+                                <Icon className="w-3 h-3 text-purple-300" />
+                              )}
+                              {tech}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
 
-                    <div className="flex gap-2">
+                    {/* Footer Action Button */}
+                    <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-auto">
+                      <span className="text-[11px] font-mono text-[var(--muted-foreground)]">
+                        {project.status.split(" - ")[0]}
+                      </span>
+
                       <a
                         href={project.github}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-muted-foreground hover:text-foreground transition-colors p-1"
-                        aria-label="GitHub Repo"
+                        className="inline-block"
                       >
-                        <Github className="h-5 w-5" />
+                        <SpecularButton
+                          size="sm"
+                          radius={8}
+                          tint="#ffffff"
+                          tintOpacity={0.1}
+                          blur={0}
+                          textColor="var(--foreground)"
+                          lineColor="var(--primary)"
+                          baseColor="transparent"
+                          intensity={0.8}
+                          shineSize={10}
+                          shineFade={30}
+                          thickness={1}
+                          speed={0.4}
+                          followMouse
+                          proximity={150}
+                          autoAnimate={false}
+                        >
+                          <span className="flex items-center gap-1 font-mono text-xs px-1">
+                            Code <ArrowUpRight className="h-3 w-3" />
+                          </span>
+                        </SpecularButton>
                       </a>
-                      {/* Optional: Add Live Demo Link here if available */}
-                      {/* <ExternalLink className="h-5 w-5" /> */}
                     </div>
                   </div>
-
-                  {/* Title & Desc */}
-                  <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-2">
-                    {project.name}
-                  </h3>
-
-                  <p className="text-sm text-muted-foreground mb-6 leading-relaxed line-clamp-3">
-                    {project.description}
-                  </p>
-
-                  {/* Tech Stack */}
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {project.tech.map((tech, i) => {
-                      const Icon = getTechIcon(tech)
-                      return (
-                        <div
-                          key={i}
-                          className="flex items-center gap-1.5 rounded-md bg-secondary/50 border border-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground transition-colors group-hover:border-primary/30 group-hover:bg-primary/5"
-                        >
-                          {Icon && <Icon className="w-3 h-3 text-primary/70" />}
-                          {tech}
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-
-                {/* Footer: Date & Action */}
-                <div className="flex items-center justify-between pt-4 border-t border-border/50 mt-auto">
-                  <span className="text-xs font-mono text-muted-foreground">
-                    {project.status.split(' - ')[0]}
-                  </span>
-                  <Button asChild variant="link" size="sm" className="p-0 h-auto text-primary hover:text-primary/80 group-hover:underline decoration-primary/50 underline-offset-4">
-                    <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-                      Code <ArrowUpRight className="h-3 w-3" />
-                    </a>
-                  </Button>
-                </div>
+                </BorderGlow>
               </motion.div>
             ))}
           </motion.div>
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

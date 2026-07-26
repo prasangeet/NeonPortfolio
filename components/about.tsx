@@ -1,60 +1,16 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import ProfileCard from "./ProfileCard";
+import MagicBento, { BentoCardItem } from "./MagicBento";
+import { GitHubCalendar } from "react-github-calendar";
 import {
   GraduationCap,
-  Award,
-  Terminal,
-  ArrowUpRight,
   Github,
   ExternalLink,
+  Sparkles,
+  Code2,
 } from "lucide-react";
-import { GitHubCalendar } from "react-github-calendar";
-import { useState, useEffect } from "react";
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-    },
-  },
-};
-
-const imageVariants = {
-  hidden: { opacity: 0, scale: 0.8, rotate: -5 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    rotate: 0,
-    transition: {
-      duration: 0.8,
-      type: "spring",
-      bounce: 0.4,
-    },
-  },
-  float: {
-    y: [-10, 10],
-    transition: {
-      duration: 3,
-      repeat: Infinity,
-      repeatType: "reverse",
-      ease: "easeInOut",
-    },
-  },
-};
 
 export default function About() {
   const [mounted, setMounted] = useState(false);
@@ -66,225 +22,198 @@ export default function About() {
   const theme = {
     light: [
       "rgba(255, 255, 255, 0.05)",
-      "#0e7490",
-      "#06b6d4",
-      "#22d3ee",
-      "#67e8f9",
+      "var(--sidebar-primary)",
+      "oklch(0.65 0.2 260)",
+      "oklch(0.75 0.15 250)",
+      "var(--primary)",
     ],
     dark: [
       "rgba(255, 255, 255, 0.05)",
-      "#0e7490",
-      "#06b6d4",
-      "#22d3ee",
-      "#67e8f9",
+      "var(--sidebar-primary)",
+      "oklch(0.65 0.2 260)",
+      "oklch(0.75 0.15 250)",
+      "var(--primary)",
     ],
   };
 
-  return (
-    <section
-      id="about"
-      className="border-b border-border/50 bg-gradient-to-b from-transparent via-primary/5 to-transparent relative overflow-hidden w-full max-w-[100vw]"
-    >
-      <div className="mx-auto max-w-6xl px-4 py-12 lg:py-24 sm:px-6 lg:px-8 relative z-10 w-full">
-        <motion.div
-          className="grid gap-16 lg:grid-cols-2 lg:gap-8 items-start"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={containerVariants}
-        >
-          {/* --- Left Column: Image & Heatmap --- */}
-          <motion.div
-            className="relative flex flex-col gap-10 lg:gap-8 items-center lg:items-start"
-            variants={containerVariants}
-          >
-            <div className="absolute top-0 left-0 -inset-4 bg-gradient-to-r from-primary to-blue-600 rounded-full blur-3xl opacity-20 animate-pulse pointer-events-none" />
+  const bentoCards: BentoCardItem[] = [
+    // 1. Bio Overview (Top Row)
+    {
+      id: "about-me",
+      colSpan: "col-span-12",
+      children: (
+        <div className="p-6 md:p-8 flex flex-col justify-between h-full space-y-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              Overview
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold mt-2 gradient-text">
+              Engineering Scalable Systems & Intelligent Apps
+            </h2>
 
-            {/* Profile Image Wrapper */}
-            <motion.div
-              className="relative w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 mx-auto lg:mx-0"
-              variants={imageVariants}
-            >
-              <motion.div
-                className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-primary via-blue-500 to-purple-500 p-1"
-                animate="float"
-                variants={imageVariants}
-              >
-                <div className="h-full w-full overflow-hidden rounded-xl bg-background">
-                  <img
-                    src="https://avatars.githubusercontent.com/u/142200325?v=4"
-                    alt="Prasangeet Dongre"
-                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
-                  />
-                </div>
-              </motion.div>
-
-              {/* Floating Card Position: Centered bottom on mobile, Right side on Desktop */}
-              <motion.div
-                className="absolute 
-                           -bottom-12 left-1/2 -translate-x-1/2 
-                           sm:-bottom-6 sm:left-auto sm:right-[-24px] sm:translate-x-0
-                           w-max z-20
-                           rounded-xl border border-border/50 bg-background/80 p-3 sm:p-4 backdrop-blur-md shadow-xl"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-green-500/10 text-green-500">
-                    <Terminal className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">
-                      Coding Streak
-                    </p>
-                    <p className="text-xs sm:text-sm font-bold text-foreground">
-                      Active Contributor
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            {/* GitHub Heatmap Section - HIDDEN ON MOBILE (hidden sm:block) */}
-            <motion.div
-              variants={itemVariants}
-              className="hidden sm:block w-full max-w-[100vw] sm:max-w-full overflow-hidden mt-6 lg:mt-0"
-            >
-              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 backdrop-blur-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <Github className="h-4 w-4" />
-                    GitHub Contributions
-                  </div>
-                  <a
-                    href="https://github.com/prasangeet"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline flex items-center gap-1"
-                  >
-                    View Profile <ExternalLink className="h-3 w-3" />
-                  </a>
-                </div>
-
-                <div className="relative w-full">
-                  <div className="flex overflow-x-auto pb-2 w-full touch-pan-x">
-                    <div className="min-w-fit mx-auto lg:mx-0">
-                      {mounted && GitHubCalendar ? (
-                        <GitHubCalendar
-                          username="prasangeet"
-                          theme={theme}
-                          fontSize={12}
-                          blockSize={7}
-                          blockMargin={2}
-                          blockRadius={1}
-                        />
-                      ) : (
-                        <div className="h-[120px] w-full animate-pulse bg-muted/10 rounded-lg" />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* --- Right Column: Text Content --- */}
-          <motion.div
-            className="space-y-6 sm:space-y-8"
-            variants={containerVariants}
-          >
-            <motion.div
-              className="space-y-3 sm:space-y-4 text-center lg:text-left"
-              variants={itemVariants}
-            >
-              <h2 className="text-3xl font-bold sm:text-4xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                About Me
-              </h2>
-              <motion.div className="h-1 w-12 bg-gradient-to-r from-primary to-blue-500 mx-auto lg:mx-0" />
-            </motion.div>
-
-            <motion.div
-              className="space-y-4 text-muted-foreground leading-relaxed text-base sm:text-lg text-center lg:text-left"
-              variants={itemVariants}
-            >
+            <div className="space-y-3 text-[var(--muted-foreground)] text-sm md:text-base leading-relaxed mt-4">
               <p>
                 I'm a B.Tech student in{" "}
-                <span className="text-foreground font-semibold">
+                <span className="text-[var(--foreground)] font-semibold">
                   Chemical Engineering
                 </span>{" "}
                 with a minor in{" "}
-                <span className="text-primary font-semibold">
+                <span className="text-[var(--foreground)] font-semibold">
                   Artificial Intelligence
                 </span>{" "}
                 at IIT Jodhpur.
               </p>
               <p>
-                My passion lies at the intersection of full-stack development
-                and machine learning. With a strong foundation in{" "}
-                <span className="text-foreground">DSA and System Design</span>,
-                I excel at building scalable applications that solve real-world
-                problems.
+                My core strength lies at the intersection of full-stack
+                engineering and machine learning. I focus heavily on{" "}
+                <span className="text-[var(--foreground)] font-medium">
+                  DSA and System Architecture
+                </span>{" "}
+                to design robust, production-ready software.
               </p>
-              <p>
-                Currently serving as a Core Member of{" "}
-                <span className="text-blue-400 font-semibold">DevlUp Labs</span>
-                , IIT Jodhpur's open-source community, where I contribute to
-                innovative projects and mentor fellow developers.
-              </p>
-            </motion.div>
-
-            {/* Info Cards Grid */}
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-1">
-              <motion.div
-                className="group rounded-xl border border-primary/20 bg-primary/5 p-4 hover:bg-primary/10 transition-colors"
-                variants={itemVariants}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="mt-1 rounded-lg bg-primary/20 p-2 text-primary shrink-0">
-                    <GraduationCap className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">Education</h3>
-                    <p className="text-sm text-muted-foreground">IIT Jodhpur</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Chemical Eng. + AI Minor
-                    </p>
-                    <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                      CGPA: 8.66
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* <motion.div */}
-              {/*   className="group rounded-xl border border-primary/20 bg-primary/5 p-4 hover:bg-primary/10 transition-colors" */}
-              {/*   variants={itemVariants} */}
-              {/* > */}
-              {/*   <div className="flex items-start gap-3"> */}
-              {/*     <div className="mt-1 rounded-lg bg-yellow-500/20 p-2 text-yellow-500 shrink-0"> */}
-              {/*       <Award className="h-5 w-5" /> */}
-              {/*     </div> */}
-              {/*     <div> */}
-              {/*       <h3 className="font-semibold text-foreground"> */}
-              {/*         Achievements */}
-              {/*       </h3> */}
-              {/*       <ul className="mt-1 space-y-1 text-xs text-muted-foreground"> */}
-              {/*         <li className="flex items-center gap-1"> */}
-              {/*           <ArrowUpRight className="h-3 w-3 text-green-500 shrink-0" /> */}
-              {/*           A* Grade in DSA */}
-              {/*         </li> */}
-              {/*         <li className="flex items-center gap-1"> */}
-              {/*           <ArrowUpRight className="h-3 w-3 text-green-500 shrink-0" /> */}
-              {/*           Open Source contributor GSSoC'26 */}
-              {/*         </li> */}
-              {/*       </ul> */}
-              {/*     </div> */}
-              {/*   </div> */}
-              {/* </motion.div> */}
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
+      ),
+    },
+
+    // 2. Education Card (Middle Left)
+    {
+      id: "education",
+      colSpan: "col-span-12 sm:col-span-6",
+      children: (
+        <div className="p-6 flex flex-col justify-between h-full min-h-[180px]">
+          <div>
+            <div className="rounded-[var(--radius)] bg-[var(--secondary)] p-2.5 w-fit text-[var(--foreground)] subtle-border mb-3">
+              <GraduationCap className="h-5 w-5" />
+            </div>
+            <h3 className="font-bold text-lg text-[var(--foreground)]">
+              IIT Jodhpur
+            </h3>
+            <p className="text-xs text-[var(--muted-foreground)] font-medium mt-0.5">
+              B.Tech Chemical Eng. + AI Minor
+            </p>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between border-t border-[var(--border)] pt-3">
+            <span className="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)]">
+              CGPA
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--secondary)] border border-[var(--border)] px-2.5 py-0.5 text-xs font-semibold text-[var(--foreground)]">
+              8.66
+            </span>
+          </div>
+        </div>
+      ),
+    },
+
+    // 3. IIT Hyderabad Internship Spotlight (Middle Right)
+    {
+      id: "iit-hyderabad-internship",
+      colSpan: "col-span-12 sm:col-span-6",
+      children: (
+        <div className="p-6 flex flex-col justify-between h-full min-h-[180px]">
+          <div>
+            <div className="rounded-[var(--radius)] bg-[var(--secondary)] p-2.5 w-fit text-[var(--foreground)] subtle-border mb-3">
+              <Code2 className="h-5 w-5 text-blue-400" />
+            </div>
+            <h3 className="font-bold text-lg text-[var(--foreground)]">
+              IIT Hyderabad
+            </h3>
+            <p className="text-xs text-[var(--muted-foreground)] font-medium mt-0.5">
+              Research Intern
+            </p>
+          </div>
+          <p className="text-xs text-[var(--muted-foreground)] mt-2 leading-relaxed">
+            Building multimodal research-paper pipelines for RAG and QA systems.
+          </p>
+        </div>
+      ),
+    },
+
+    // 4. GitHub Heatmap Card (Full Width Bottom)
+    // GitHub Heatmap Card (Full Width Bottom)
+    {
+      id: "github-calendar",
+      colSpan: "col-span-12",
+      children: (
+        <div className="p-4 md:p-5 flex flex-col justify-between h-full">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2 text-xs font-semibold text-[var(--foreground)]">
+              <Github className="h-4 w-4" />
+              Contributions
+            </div>
+            <a
+              href="https://github.com/prasangeet"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] smooth-transition flex items-center gap-1"
+            >
+              prasangeet <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+
+          <div className="w-full flex justify-center items-center py-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {mounted ? (
+              <GitHubCalendar
+                username="prasangeet"
+                theme={theme}
+                fontSize={11}
+                blockSize={8}
+                blockMargin={3}
+                blockRadius={2}
+              />
+            ) : (
+              <div className="h-[110px] w-full animate-pulse bg-[var(--muted)]/20 rounded-[var(--radius)]" />
+            )}
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <section
+      id="about"
+      className="min-h-screen w-full flex flex-col justify-center items-center py-12 px-4 md:px-8 max-w-7xl mx-auto"
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch w-full h-full">
+        {/* Left Side: Profile Card stretched container */}
+        <div className="lg:col-span-4 flex justify-center items-center w-full h-full">
+          <ProfileCard
+            name="Prasangeet Dongre"
+            title="Software Engineer & AI Minor"
+            handle="prasangeet"
+            status="Online"
+            contactText="Contact Me"
+            avatarUrl="https://avatars.githubusercontent.com/u/142200325?v=4"
+            showUserInfo={false}
+            enableTilt={true}
+            enableMobileTilt={false}
+            onContactClick={() => {
+              document
+                .getElementById("contact")
+                ?.scrollIntoView({ behavior: "smooth" });
+            }}
+            behindGlowColor="rgba(125, 190, 255, 0.67)"
+            iconUrl="/placeholder-logo.png"
+            behindGlowEnabled
+            innerGradient="linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)"
+          />
+        </div>
+
+        {/* Right Side: Magic Bento spanning full container height */}
+        <div className="lg:col-span-8 w-full flex flex-col justify-center">
+          <MagicBento
+            cards={bentoCards}
+            glowColor="255, 255, 255"
+            enableSpotlight={true}
+            enableStars={false}
+            clickEffect={false}
+            enableTilt={false}
+          />
+        </div>
       </div>
     </section>
   );
