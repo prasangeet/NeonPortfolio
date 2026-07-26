@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { ScrollStarsBackground } from "@/components/scroll-stars-background";
 import { Scene3D } from "@/components/3d-scene";
 import Navigation from "@/components/navigation";
+import { SmoothScroll } from "@/components/smooth-scroll"; // Import here
 import "./globals.css";
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -42,15 +43,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased text-foreground w-full">
-        <ScrollStarsBackground />
-        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-          <Scene3D />
-        </div>
-        <div className="relative z-10">
-          <Navigation />
-          {children}
-        </div>
-        <Analytics />
+        <SmoothScroll>
+          <ScrollStarsBackground />
+          <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+            <Scene3D />
+          </div>
+          <div className="relative z-10">
+            <Navigation />
+            {children}
+          </div>
+          <Analytics />
+        </SmoothScroll>
       </body>
     </html>
   );

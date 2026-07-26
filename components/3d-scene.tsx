@@ -84,6 +84,32 @@ const logos = [
 
 const DARK_LOGOS = ["GitHub", "Prisma", "Express", "ThreeJS"];
 
+// Adjusted keyframe journey for a balanced medium starting size
+const JOURNEY = {
+  camDist: [33, 23, 28],
+  camY: [0, 1, 0],
+  camAngle: [0, 0.4, 0.7],
+  coreScale: [1, 1.2, 1.05],
+  ringSpread: [0, 2.5, 1.2],
+  iconSpread: [0, 1.2, 0.4],
+  glowIntensity: [0.9, 1.4, 1.0],
+  hue: [0.54, 0.58, 0.54],
+};
+
+function smoothstep(t: number) {
+  const c = Math.min(Math.max(t, 0), 1);
+  return c * c * (3 - 2 * c);
+}
+
+function sampleKeyframes(arr: number[], t: number) {
+  const segs = arr.length - 1;
+  const clamped = Math.min(Math.max(t, 0), 1);
+  const scaled = clamped * segs;
+  const idx = Math.min(Math.floor(scaled), segs - 1);
+  const localT = scaled - idx;
+  return THREE.MathUtils.lerp(arr[idx], arr[idx + 1], smoothstep(localT));
+}
+
 export function Scene3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -91,12 +117,7 @@ export function Scene3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    // --- CENTERED BASE GLOBE POSITIONING ---
-    const GLOBE_BASE_Y = 0;
     const scene = new THREE.Scene();
-
-    const initialDistance = 58;
-    const targetDistance = 30;
 
     const camera = new THREE.PerspectiveCamera(
       45,
@@ -104,14 +125,13 @@ export function Scene3D() {
       0.1,
       1000,
     );
-    camera.position.set(0, 0, initialDistance);
+    camera.position.set(0, 0, JOURNEY.camDist[0]);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
       powerPreference: "high-performance",
     });
-
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -121,40 +141,27 @@ export function Scene3D() {
     container.appendChild(renderer.domElement);
 
     const mainGroup = new THREE.Group();
-    mainGroup.position.set(0, GLOBE_BASE_Y, 0);
     scene.add(mainGroup);
 
-    // --- WINDOW-LEVEL MOUSE TRACKING FOR ROTATION + POSITION SHIFT ---
     const targetRotation = { x: 0, y: 0 };
     const targetPositionOffset = { x: 0, y: 0 };
-
     const handleWindowMouseMove = (e: MouseEvent) => {
-      // Calculate normalized mouse position across the whole viewport (-1 to 1)
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-      // Desired tilt values
       targetRotation.x = -y * 0.8;
       targetRotation.y = x * 1.2;
-
-      // Subtle positional drag shift (max ~2.5 units movement along X and Y)
       targetPositionOffset.x = x * 2.5;
       targetPositionOffset.y = y * 2.5;
     };
-
     window.addEventListener("mousemove", handleWindowMouseMove);
 
-    // --- LIGHTS ---
     const ambientLight = new THREE.AmbientLight(0x0a192f, 2.0);
     scene.add(ambientLight);
-
     const pointLight = new THREE.PointLight(0x00f3ff, 5, 50);
     pointLight.position.set(0, 0, 0);
     mainGroup.add(pointLight);
 
-    // ==========================================
-    // 1. FUTURISTIC CORE (INNER GLOWING PLASMA)
-    // ==========================================
+    // 1. Core
     const innerGeo = new THREE.IcosahedronGeometry(6.5, 4);
     const innerMat = new THREE.MeshPhysicalMaterial({
       color: 0x00d8ff,
@@ -164,14 +171,11 @@ export function Scene3D() {
       metalness: 0.8,
       clearcoat: 1.0,
       clearcoatRoughness: 0.1,
-      wireframe: false,
     });
     const innerCore = new THREE.Mesh(innerGeo, innerMat);
     mainGroup.add(innerCore);
 
-    // ==========================================
-    // 2. GEOMETRIC HOLOGRAPHIC OUTER SHELL
-    // ==========================================
+    // 2. Outer shell
     const outerGeo = new THREE.IcosahedronGeometry(8.2, 2);
     const outerMat = new THREE.MeshBasicMaterial({
       color: 0x00f3ff,
@@ -183,12 +187,10 @@ export function Scene3D() {
     const outerShell = new THREE.Mesh(outerGeo, outerMat);
     mainGroup.add(outerShell);
 
-    // Node Joints on Outer Shell
     const nodeGeo = new THREE.SphereGeometry(0.12, 8, 8);
     const nodeMat = new THREE.MeshBasicMaterial({ color: 0x00ffff });
     const posAttribute = outerGeo.getAttribute("position");
     const nodeGroup = new THREE.Group();
-
     for (let i = 0; i < posAttribute.count; i++) {
       const vertex = new THREE.Vector3().fromBufferAttribute(posAttribute, i);
       const node = new THREE.Mesh(nodeGeo, nodeMat);
@@ -197,9 +199,7 @@ export function Scene3D() {
     }
     outerShell.add(nodeGroup);
 
-    // ==========================================
-    // 3. GYROSCOPIC SCI-FI ORBITAL RINGS
-    // ==========================================
+    // 3. Rings
     const createSciFiRing = (
       radius: number,
       color: number,
@@ -207,28 +207,42 @@ export function Scene3D() {
     ) => {
       const ringGeo = new THREE.TorusGeometry(radius, tubeRadius, 16, 100);
       const ringMat = new THREE.MeshStandardMaterial({
-        color: color,
+        color,
         emissive: color,
         emissiveIntensity: 0.6,
         metalness: 0.9,
         roughness: 0.2,
+        transparent: true,
       });
       return new THREE.Mesh(ringGeo, ringMat);
     };
 
+    const ring1Pivot = new THREE.Group();
     const ring1 = createSciFiRing(9.8, 0x00f3ff, 0.06);
     ring1.rotation.x = Math.PI / 3;
-    mainGroup.add(ring1);
+    ring1Pivot.add(ring1);
+    mainGroup.add(ring1Pivot);
 
+    const ring2Pivot = new THREE.Group();
     const ring2 = createSciFiRing(10.6, 0xff0055, 0.05);
     ring2.rotation.y = Math.PI / 4;
     ring2.rotation.x = -Math.PI / 6;
-    mainGroup.add(ring2);
+    ring2Pivot.add(ring2);
+    mainGroup.add(ring2Pivot);
 
-    // ==========================================
-    // 4. ATMOSPHERIC SHADER GLOW
-    // ==========================================
+    const ring1Normal = new THREE.Vector3(0, 0, 1)
+      .applyEuler(ring1.rotation)
+      .normalize();
+    const ring2Normal = new THREE.Vector3(0, 0, 1)
+      .applyEuler(ring2.rotation)
+      .normalize();
+
+    // 4. Glow
     const glowMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        uIntensity: { value: JOURNEY.glowIntensity[0] },
+        uColor: { value: new THREE.Color().setHSL(JOURNEY.hue[0], 1, 0.5) },
+      },
       vertexShader: `
         varying vec3 vNormal;
         void main() {
@@ -238,9 +252,11 @@ export function Scene3D() {
       `,
       fragmentShader: `
         varying vec3 vNormal;
+        uniform float uIntensity;
+        uniform vec3 uColor;
         void main() {
           float intensity = pow(0.7 - dot(vNormal, vec3(0, 0, 1.0)), 2.2);
-          gl_FragColor = vec4(0.0, 0.8, 1.0, 1.0) * intensity * 0.85;
+          gl_FragColor = vec4(uColor, 1.0) * intensity * uIntensity;
         }
       `,
       blending: THREE.AdditiveBlending,
@@ -254,9 +270,7 @@ export function Scene3D() {
     );
     mainGroup.add(glowSphere);
 
-    // ==========================================
-    // 5. TECH ICONS SETUP
-    // ==========================================
+    // 5. Tech icons
     const textureLoader = new THREE.TextureLoader();
     const iconSprites: THREE.Sprite[] = [];
     const activeBlobUrls: string[] = [];
@@ -271,12 +285,10 @@ export function Scene3D() {
           if (!svgText.includes("width=")) {
             svgText = svgText.replace("<svg", '<svg width="128" height="128"');
           }
-
           if (DARK_LOGOS.includes(logo.name)) {
             const whiteOverride = `<style>path, circle, rect, polygon, ellipse { fill: #ffffff !important; stroke: #ffffff !important; }</style>`;
             svgText = svgText.replace(">", `>${whiteOverride}`);
           }
-
           const blob = new Blob([svgText], { type: "image/svg+xml" });
           const blobUrl = URL.createObjectURL(blob);
           activeBlobUrls.push(blobUrl);
@@ -297,9 +309,9 @@ export function Scene3D() {
 
             const phi = Math.acos(-1 + (2 * i) / logos.length);
             const theta = Math.sqrt(logos.length * Math.PI) * phi;
-            const radius = 13.0;
-
-            sprite.position.setFromSphericalCoords(radius, phi, theta);
+            const baseRadius = 13.0;
+            sprite.userData = { phi, theta, baseRadius, jitter: i * 0.37 };
+            sprite.position.setFromSphericalCoords(baseRadius, phi, theta);
             sprite.scale.set(2.0, 2.0, 2.0);
 
             mainGroup.add(sprite);
@@ -311,13 +323,10 @@ export function Scene3D() {
         });
     });
 
-    // ==========================================
-    // 6. AMBIENT PARTICLES
-    // ==========================================
+    // 6. Ambient particles
     const particleCount = 180;
     const particlesGeo = new THREE.BufferGeometry();
     const posArray = new Float32Array(particleCount * 3);
-
     for (let i = 0; i < particleCount * 3; i++) {
       posArray[i] = (Math.random() - 0.5) * 180;
     }
@@ -334,74 +343,119 @@ export function Scene3D() {
     const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
     scene.add(particlesMesh);
 
-    // --- SCROLL BINDING ---
-    let targetProgress = 0;
-    let currentProgress = 0;
+    let targetHeroT = 0;
+    let currentHeroT = 0;
 
-    const handleScroll = () => {
-      const maxScroll = Math.max(
-        document.documentElement.scrollHeight - window.innerHeight,
-        window.innerHeight,
-      );
+    let targetSkillsT = 0;
+    let currentSkillsT = 0;
 
-      targetProgress = Math.min(Math.max(window.scrollY / maxScroll, 0), 1);
+    const computeSkillsProgress = () => {
+      const el = document.getElementById("skills");
+      if (!el) {
+        targetSkillsT = 0;
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      const vh = Math.max(window.innerHeight, 1);
+
+      const enterStart = vh * 0.85;
+      const enterEnd = vh * 0.2;
+      const enter = (enterStart - rect.top) / (enterStart - enterEnd);
+
+      const exitStart = vh * 0.6;
+      const exitEnd = vh * -0.2;
+      const exit = (rect.bottom - exitEnd) / (exitStart - exitEnd);
+
+      const clampedEnter = Math.min(Math.max(enter, 0), 1);
+      const clampedExit = Math.min(Math.max(exit, 0), 1);
+      targetSkillsT = smoothstep(clampedEnter) * smoothstep(clampedExit);
     };
 
+    const handleScroll = () => {
+      const vh = Math.max(window.innerHeight, 1);
+      targetHeroT = window.scrollY / vh;
+      computeSkillsProgress();
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
-    // --- ANIMATION LOOP ---
     const clock = new THREE.Clock();
     let animationId: number;
     let accumulatedSpin = 0;
+    const tmpColor = new THREE.Color();
 
     const animate = () => {
       animationId = requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.05);
       const time = clock.elapsedTime;
 
-      currentProgress += (targetProgress - currentProgress) * 0.08;
-      const clampedProgress = Math.min(Math.max(currentProgress, 0), 1);
+      currentHeroT += (targetHeroT - currentHeroT) * 0.06;
 
-      // Camera zoom transition on scroll
-      camera.position.z = THREE.MathUtils.lerp(
-        initialDistance,
-        targetDistance,
-        clampedProgress,
-      );
+      const journeyT = Math.min(Math.max(currentHeroT, 0), 1);
+      const camDist = sampleKeyframes(JOURNEY.camDist, journeyT);
+      const camYOff = sampleKeyframes(JOURNEY.camY, journeyT);
+      const camAngle = sampleKeyframes(JOURNEY.camAngle, journeyT);
+      const coreScaleTarget = sampleKeyframes(JOURNEY.coreScale, journeyT);
+      const ringSpread = sampleKeyframes(JOURNEY.ringSpread, journeyT);
+      const iconSpread = sampleKeyframes(JOURNEY.iconSpread, journeyT);
+      const glowIntensity = sampleKeyframes(JOURNEY.glowIntensity, journeyT);
+      const hue = sampleKeyframes(JOURNEY.hue, journeyT);
 
-      // Smooth position shift (drag effect) relative to mouse coordinates
+      const loadIn = smoothstep(time / 1.0);
+      const recede = 1 - smoothstep((currentHeroT - 0.65) / 0.55);
+      const presence = loadIn * recede;
+
+      camera.position.x = Math.sin(camAngle) * camDist * 0.35;
+      camera.position.z = Math.cos(camAngle) * camDist;
+      camera.position.y = camYOff;
+      camera.lookAt(mainGroup.position);
+
       mainGroup.position.x +=
         (targetPositionOffset.x - mainGroup.position.x) * 0.05;
       mainGroup.position.y +=
-        (GLOBE_BASE_Y + targetPositionOffset.y - mainGroup.position.y) * 0.05;
-
-      // Base continuous Y-axis spin
+        (targetPositionOffset.y - mainGroup.position.y) * 0.05;
       mainGroup.rotation.y += 0.003;
-
-      // Smooth mouse-tracking rotation response across screen
       mainGroup.rotation.x += (targetRotation.x - mainGroup.rotation.x) * 0.05;
       mainGroup.rotation.z +=
         (-targetRotation.y * 0.2 - mainGroup.rotation.z) * 0.05;
 
-      accumulatedSpin += delta * 0.8;
+      mainGroup.scale.setScalar(presence);
 
+      accumulatedSpin += delta * 0.8;
       innerCore.rotation.y = accumulatedSpin;
       innerCore.rotation.z = accumulatedSpin * 0.35;
-
       outerShell.rotation.y = -accumulatedSpin * 0.9;
       outerShell.rotation.x = accumulatedSpin * 0.25;
-
       ring1.rotation.z = accumulatedSpin * 1.15;
       ring2.rotation.y = accumulatedSpin * 1.35;
 
-      // Pulsing glow effects
-      const pulse = 1 + Math.sin(time * 2.5) * 0.04;
-      innerCore.scale.setScalar(pulse);
-      glowSphere.scale.setScalar(1 + Math.sin(time * 1.4) * 0.025);
+      ring1Pivot.position.copy(ring1Normal).multiplyScalar(ringSpread);
+      ring2Pivot.position.copy(ring2Normal).multiplyScalar(-ringSpread * 0.8);
 
-      iconSprites.forEach((sprite, i) => {
-        sprite.scale.setScalar(2.0 + Math.sin(time * 1.5 + i) * 0.08);
+      const pulse = 1 + Math.sin(time * 2.5) * 0.04;
+      innerCore.scale.setScalar(pulse * coreScaleTarget);
+      glowSphere.scale.setScalar(
+        (1 + Math.sin(time * 1.4) * 0.025) * (0.9 + coreScaleTarget * 0.1),
+      );
+
+      tmpColor.setHSL(hue, 1, 0.5);
+      glowMaterial.uniforms.uIntensity.value = glowIntensity * presence;
+      glowMaterial.uniforms.uColor.value.copy(tmpColor);
+      pointLight.color.copy(tmpColor);
+      pointLight.intensity = 5 * presence;
+
+      iconSprites.forEach((sprite) => {
+        const { phi, theta, baseRadius, jitter } = sprite.userData as {
+          phi: number;
+          theta: number;
+          baseRadius: number;
+          jitter: number;
+        };
+        const radius =
+          baseRadius + iconSpread * 4 + Math.sin(time * 0.6 + jitter) * 0.3;
+        sprite.position.setFromSphericalCoords(radius, phi, theta);
+        sprite.scale.setScalar(2.0 + Math.sin(time * 1.5 + jitter) * 0.08);
+        (sprite.material as THREE.SpriteMaterial).opacity = presence;
       });
 
       particlesMesh.rotation.y = time * 0.02;
@@ -414,14 +468,11 @@ export function Scene3D() {
       if (!containerRef.current) return;
       const width = containerRef.current.clientWidth;
       const height = containerRef.current.clientHeight;
-
       if (width === 0 || height === 0) return;
-
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
     };
-
     handleResize();
     window.addEventListener("resize", handleResize);
 
