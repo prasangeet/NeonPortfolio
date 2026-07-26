@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 const logos = [
   {
@@ -89,19 +88,19 @@ export function Scene3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const GLOBE_Y_POSITION = -7;
+    // --- CENTERED BASE GLOBE POSITIONING ---
+    const GLOBE_BASE_Y = 0;
     const scene = new THREE.Scene();
 
-    const initialDistance = 50;
-    const targetDistance = 35;
-    const initialGlobeY = GLOBE_Y_POSITION;
-    const targetGlobeY = -9;
+    const initialDistance = 58;
+    const targetDistance = 30;
 
     const camera = new THREE.PerspectiveCamera(
       45,
-      containerRef.current.clientWidth / containerRef.current.clientHeight,
+      container.clientWidth / container.clientHeight,
       0.1,
       1000,
     );
@@ -113,27 +112,37 @@ export function Scene3D() {
       powerPreference: "high-performance",
     });
 
-    renderer.setSize(
-      containerRef.current.clientWidth,
-      containerRef.current.clientHeight,
-    );
+    renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
-    containerRef.current.appendChild(renderer.domElement);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.enableZoom = false;
-    controls.enablePan = false;
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.5;
-    controls.target.set(0, GLOBE_Y_POSITION, 0);
+    container.innerHTML = "";
+    container.appendChild(renderer.domElement);
 
     const mainGroup = new THREE.Group();
-    mainGroup.position.y = GLOBE_Y_POSITION;
+    mainGroup.position.set(0, GLOBE_BASE_Y, 0);
     scene.add(mainGroup);
+
+    // --- WINDOW-LEVEL MOUSE TRACKING FOR ROTATION + POSITION SHIFT ---
+    const targetRotation = { x: 0, y: 0 };
+    const targetPositionOffset = { x: 0, y: 0 };
+
+    const handleWindowMouseMove = (e: MouseEvent) => {
+      // Calculate normalized mouse position across the whole viewport (-1 to 1)
+      const x = (e.clientX / window.innerWidth) * 2 - 1;
+      const y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      // Desired tilt values
+      targetRotation.x = -y * 0.8;
+      targetRotation.y = x * 1.2;
+
+      // Subtle positional drag shift (max ~2.5 units movement along X and Y)
+      targetPositionOffset.x = x * 2.5;
+      targetPositionOffset.y = y * 2.5;
+    };
+
+    window.addEventListener("mousemove", handleWindowMouseMove);
 
     // --- LIGHTS ---
     const ambientLight = new THREE.AmbientLight(0x0a192f, 2.0);
@@ -325,22 +334,17 @@ export function Scene3D() {
     const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
     scene.add(particlesMesh);
 
-    // --- SCROLL ANIMATION BINDING ---
+    // --- SCROLL BINDING ---
     let targetProgress = 0;
     let currentProgress = 0;
 
     const handleScroll = () => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-
-      const totalScrollableDistance = windowHeight * 0.7;
-      const scrolled = windowHeight - rect.top;
-
-      targetProgress = Math.min(
-        Math.max(scrolled / totalScrollableDistance, 0),
-        1,
+      const maxScroll = Math.max(
+        document.documentElement.scrollHeight - window.innerHeight,
+        window.innerHeight,
       );
+
+      targetProgress = Math.min(Math.max(window.scrollY / maxScroll, 0), 1);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -349,45 +353,52 @@ export function Scene3D() {
     // --- ANIMATION LOOP ---
     const clock = new THREE.Clock();
     let animationId: number;
+    let accumulatedSpin = 0;
 
     const animate = () => {
       animationId = requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
+      const delta = Math.min(clock.getDelta(), 0.05);
+      const time = clock.elapsedTime;
 
       currentProgress += (targetProgress - currentProgress) * 0.08;
       const clampedProgress = Math.min(Math.max(currentProgress, 0), 1);
 
-      const currentDistance = THREE.MathUtils.lerp(
+      // Camera zoom transition on scroll
+      camera.position.z = THREE.MathUtils.lerp(
         initialDistance,
         targetDistance,
         clampedProgress,
       );
 
-      controls.minDistance = currentDistance;
-      controls.maxDistance = currentDistance;
+      // Smooth position shift (drag effect) relative to mouse coordinates
+      mainGroup.position.x +=
+        (targetPositionOffset.x - mainGroup.position.x) * 0.05;
+      mainGroup.position.y +=
+        (GLOBE_BASE_Y + targetPositionOffset.y - mainGroup.position.y) * 0.05;
 
-      mainGroup.position.y = THREE.MathUtils.lerp(
-        initialGlobeY,
-        targetGlobeY,
-        clampedProgress,
-      );
-      controls.target.set(0, mainGroup.position.y, 0);
+      // Base continuous Y-axis spin
+      mainGroup.rotation.y += 0.003;
 
-      controls.update();
+      // Smooth mouse-tracking rotation response across screen
+      mainGroup.rotation.x += (targetRotation.x - mainGroup.rotation.x) * 0.05;
+      mainGroup.rotation.z +=
+        (-targetRotation.y * 0.2 - mainGroup.rotation.z) * 0.05;
 
-      // Independent multi-axis rotations
-      innerCore.rotation.y = time * 0.2;
-      innerCore.rotation.z = time * 0.1;
+      accumulatedSpin += delta * 0.8;
 
-      outerShell.rotation.y = -time * 0.15;
-      outerShell.rotation.x = time * 0.08;
+      innerCore.rotation.y = accumulatedSpin;
+      innerCore.rotation.z = accumulatedSpin * 0.35;
 
-      ring1.rotation.z = time * 0.3;
-      ring2.rotation.y = time * 0.4;
+      outerShell.rotation.y = -accumulatedSpin * 0.9;
+      outerShell.rotation.x = accumulatedSpin * 0.25;
 
-      // Pulsing energy core effect
+      ring1.rotation.z = accumulatedSpin * 1.15;
+      ring2.rotation.y = accumulatedSpin * 1.35;
+
+      // Pulsing glow effects
       const pulse = 1 + Math.sin(time * 2.5) * 0.04;
       innerCore.scale.setScalar(pulse);
+      glowSphere.scale.setScalar(1 + Math.sin(time * 1.4) * 0.025);
 
       iconSprites.forEach((sprite, i) => {
         sprite.scale.setScalar(2.0 + Math.sin(time * 1.5 + i) * 0.08);
@@ -415,14 +426,19 @@ export function Scene3D() {
     window.addEventListener("resize", handleResize);
 
     return () => {
+      window.removeEventListener("mousemove", handleWindowMouseMove);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animationId);
-      controls.dispose();
       renderer.dispose();
       activeBlobUrls.forEach((url) => URL.revokeObjectURL(url));
     };
   }, []);
 
-  return <div ref={containerRef} className="w-full h-full relative z-0" />;
+  return (
+    <div
+      ref={containerRef}
+      className="w-full h-full relative z-0 pointer-events-none"
+    />
+  );
 }

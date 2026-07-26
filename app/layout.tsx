@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { ScrollStarsBackground } from "@/components/scroll-stars-background";
+import { Scene3D } from "@/components/3d-scene";
 import Navigation from "@/components/navigation";
 import "./globals.css";
 
@@ -42,8 +43,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased text-foreground w-full">
         <ScrollStarsBackground />
-        <Navigation />
-        {children}
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+          <Scene3D />
+        </div>
+        <div className="relative z-10">
+          <Navigation />
+          {children}
+        </div>
         <Analytics />
       </body>
     </html>

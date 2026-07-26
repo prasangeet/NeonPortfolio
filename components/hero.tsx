@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Github, Linkedin, Mail, Sparkles } from "lucide-react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { Scene3D } from "./3d-scene";
 import { useState, useEffect } from "react";
 import SplitText from "@/components/SplitText";
 import ShinyText from "@/components/ShinyText";
@@ -52,11 +51,6 @@ export default function Hero() {
 
   return (
     <section className="relative h-screen h-[100dvh] w-full flex flex-col justify-between items-center overflow-hidden pt-16 pb-6 px-4 md:px-8">
-      {/* --- 3D BACKGROUND CANVAS --- */}
-      <div className="absolute inset-0 z-0">
-        <Scene3D />
-      </div>
-
       {/* --- SMOOTH CIRCULAR CENTER BACKDROP --- */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[650px] aspect-square rounded-full bg-[var(--background)]/60 blur-3xl pointer-events-none z-0" />
 
