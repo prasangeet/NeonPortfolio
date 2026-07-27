@@ -3,9 +3,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { ScrollStarsBackground } from "@/components/scroll-stars-background";
+import { SpaceBoiBackground } from "@/components/space-boi-wrapper";
 import { Scene3D } from "@/components/3d-scene";
 import Navigation from "@/components/navigation";
-import { SmoothScroll } from "@/components/smooth-scroll"; // Import here
+import { SmoothScroll } from "@/components/smooth-scroll";
 import "./globals.css";
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -41,13 +42,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body className="font-sans antialiased text-foreground w-full">
+        {/* Fixed 3D Elements outside Lenis wrapper */}
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+          {/* Tech Core Scene (Hero) */}
+          <Scene3D />
+        </div>
+
+        {/* Space Boi Model (Experience Section) */}
+        <SpaceBoiBackground />
+
         <SmoothScroll>
           <ScrollStarsBackground />
-          <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-            <Scene3D />
-          </div>
           <div className="relative z-10">
             <Navigation />
             {children}

@@ -85,11 +85,14 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="relative border-b border-border/50 bg-gradient-to-b from-transparent via-primary/5 to-transparent py-24 md:py-32 lg:py-48 min-h-[80vh] flex flex-col justify-center overflow-hidden"
+      className="relative w-full min-h-screen border-b border-border/50 bg-gradient-to-b from-transparent via-primary/5 to-transparent py-12 md:py-16 lg:py-20 flex flex-col justify-between overflow-hidden"
     >
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+      {/* Spacer to absorb top space and keep content centered */}
+      <div className="flex-1" />
+
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 relative z-10 w-full my-auto">
         <motion.div
-          className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-start"
+          className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-center"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
@@ -281,10 +284,15 @@ export default function Contact() {
             </motion.div>
           </div>
         </motion.div>
+      </div>
 
-        {/* Footer Section */}
+      {/* Spacer to absorb bottom space and pin footer cleanly */}
+      <div className="flex-1" />
+
+      {/* Footer Section */}
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <motion.div
-          className="mt-12 sm:mt-24 border-t border-border/40 pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs sm:text-sm text-muted-foreground text-center sm:text-left"
+          className="border-t border-border/40 pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs sm:text-sm text-muted-foreground text-center sm:text-left"
           variants={itemVariants}
           initial="hidden"
           whileInView="visible"
